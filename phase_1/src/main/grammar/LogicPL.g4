@@ -56,7 +56,7 @@ func
 
 funcBody
     : (body)* returnStatement (body)*
-    | (body)*
+    | (body)* ///////////////////////////////////////////////
     ;
 
 funcDec
@@ -94,57 +94,80 @@ returnStatement
     ;
 
 expression
-    : expression OR orExpression { System.out.println("Operator: ||"); }
-    | orExpression
+    : orExpression expression_
+    ;
+
+expression_
+    : OR orExpression { System.out.println("Operator: ||"); } expression_
+    |
     ;
 
 orExpression
-    : orExpression AND andExpression { System.out.println("Operator: &&"); }
-    | andExpression
+    : andExpression orExpression_
     ;
 
+orExpression_
+    : AND andExpression { System.out.println("Operator: &&"); } orExpression_
+    |
+    ;
 
 andExpression
-    : andExpression EQUAL isNotExpression { System.out.println("Operator: =="); }
-    | andExpression NOT_EQUAL isNotExpression { System.out.println("Operator: !="); }
-    | isNotExpression
+    : isNotExpression andExpression_
+    ;
+
+andExpression_
+    : EQUAL isNotExpression { System.out.println("Operator: =="); } andExpression_
+    | NOT_EQUAL isNotExpression { System.out.println("Operator: !="); } andExpression_
+    |
     ;
 
 isNotExpression
-    : isNotExpression LT ltgtExpression { System.out.println("Operator: <"); }
-    | isNotExpression LT_EQ ltgtExpression { System.out.println("Operator: <="); }
-    | isNotExpression GT ltgtExpression { System.out.println("Operator: >"); }
-    | isNotExpression GT_EQ ltgtExpression { System.out.println("Operator: >="); }
-    | ltgtExpression
+    : ltGtExpression isNotExpression_
     ;
 
-ltgtExpression
-    : ltgtExpression PLUS addSubExpression { System.out.println("Operator: +"); }
-    | ltgtExpression MINUS addSubExpression { System.out.println("Operator: -"); }
-    | addSubExpression
+isNotExpression_
+    : LT ltGtExpression { System.out.println("Operator: <"); } isNotExpression_
+    | LT_EQ ltGtExpression { System.out.println("Operator: <="); } isNotExpression_
+    | GT ltGtExpression { System.out.println("Operator: >"); } isNotExpression_
+    | GT_EQ ltGtExpression { System.out.println("Operator: >="); } isNotExpression_
+    |
+    ;
+
+ltGtExpression
+    : addSubExpression ltGtExpression_
+    ;
+
+ltGtExpression_
+    : PLUS addSubExpression { System.out.println("Operator: +"); } ltGtExpression_
+    | MINUS addSubExpression { System.out.println("Operator: -"); } ltGtExpression_
+    |
     ;
 
 addSubExpression
-    : addSubExpression MULT mulDivExpression { System.out.println("Operator: *"); }
-    | addSubExpression DIV mulDivExpression { System.out.println("Operator: /"); }
-    | addSubExpression MODE mulDivExpression { System.out.println("Operator: %"); }
-    | mulDivExpression
+    : multiDivExpression addSubExpression_
     ;
 
-mulDivExpression
-    : PLUS tildaNegOperator { System.out.println("Operator: +"); }
-    | MINUS tildaNegOperator { System.out.println("Operator: -"); }
-    | NOT tildaNegOperator { System.out.println("Operator: !"); }
-    | tildaNegOperator
+addSubExpression_
+    : MULT multiDivExpression { System.out.println("Operator: *"); } addSubExpression_
+    | DIV multiDivExpression { System.out.println("Operator: /"); } addSubExpression_
+    | MODE multiDivExpression { System.out.println("Operator: %"); } addSubExpression_
+    |
     ;
 
-tildaNegOperator
-    : tildaNegOperator LBRACE expression RBRACE
-    | factor_ LBRACE expression RBRACE
-    | factor_
+multiDivExpression
+    : PLUS braceOperator { System.out.println("Operator: +"); }
+    | MINUS braceOperator { System.out.println("Operator: -"); }
+    | NOT braceOperator { System.out.println("Operator: !"); }
+    | braceOperator
     ;
 
-factor_
+braceOperator
+    : braceOperator LBRACE expression RBRACE
+    | factor LBRACE expression RBRACE
+    | factor
+    ;
+
+factor
     : LPAR expression RPAR
     | INT_VALUE | '0'
     | BOOL_VALUE
