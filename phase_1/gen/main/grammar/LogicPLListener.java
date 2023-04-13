@@ -1,4 +1,4 @@
-// Generated from D:/Term6/Complier/Cas/ca1/src/main/grammar\LogicPL.g4 by ANTLR 4.12.0
+// Generated from D:/Compiler/CA/LogicPL-Compiler/phase_1/src/main/grammar\LogicPL.g4 by ANTLR 4.12.0
 package main.grammar;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -18,6 +18,16 @@ public interface LogicPLListener extends ParseTreeListener {
 	 */
 	void exitLogicPL(LogicPLParser.LogicPLContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#main}.
+	 * @param ctx the parse tree
+	 */
+	void enterMain(LogicPLParser.MainContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#main}.
+	 * @param ctx the parse tree
+	 */
+	void exitMain(LogicPLParser.MainContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link LogicPLParser#varDec}.
 	 * @param ctx the parse tree
 	 */
@@ -27,6 +37,46 @@ public interface LogicPLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVarDec(LogicPLParser.VarDecContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#print}.
+	 * @param ctx the parse tree
+	 */
+	void enterPrint(LogicPLParser.PrintContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#print}.
+	 * @param ctx the parse tree
+	 */
+	void exitPrint(LogicPLParser.PrintContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#loop}.
+	 * @param ctx the parse tree
+	 */
+	void enterLoop(LogicPLParser.LoopContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#loop}.
+	 * @param ctx the parse tree
+	 */
+	void exitLoop(LogicPLParser.LoopContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#body}.
+	 * @param ctx the parse tree
+	 */
+	void enterBody(LogicPLParser.BodyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#body}.
+	 * @param ctx the parse tree
+	 */
+	void exitBody(LogicPLParser.BodyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#implication}.
+	 * @param ctx the parse tree
+	 */
+	void enterImplication(LogicPLParser.ImplicationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#implication}.
+	 * @param ctx the parse tree
+	 */
+	void exitImplication(LogicPLParser.ImplicationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LogicPLParser#predicate}.
 	 * @param ctx the parse tree
@@ -38,25 +88,25 @@ public interface LogicPLListener extends ParseTreeListener {
 	 */
 	void exitPredicate(LogicPLParser.PredicateContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link LogicPLParser#functionCall}.
+	 * Enter a parse tree produced by {@link LogicPLParser#query1}.
 	 * @param ctx the parse tree
 	 */
-	void enterFunctionCall(LogicPLParser.FunctionCallContext ctx);
+	void enterQuery1(LogicPLParser.Query1Context ctx);
 	/**
-	 * Exit a parse tree produced by {@link LogicPLParser#functionCall}.
+	 * Exit a parse tree produced by {@link LogicPLParser#query1}.
 	 * @param ctx the parse tree
 	 */
-	void exitFunctionCall(LogicPLParser.FunctionCallContext ctx);
+	void exitQuery1(LogicPLParser.Query1Context ctx);
 	/**
-	 * Enter a parse tree produced by {@link LogicPLParser#argList}.
+	 * Enter a parse tree produced by {@link LogicPLParser#query2}.
 	 * @param ctx the parse tree
 	 */
-	void enterArgList(LogicPLParser.ArgListContext ctx);
+	void enterQuery2(LogicPLParser.Query2Context ctx);
 	/**
-	 * Exit a parse tree produced by {@link LogicPLParser#argList}.
+	 * Exit a parse tree produced by {@link LogicPLParser#query2}.
 	 * @param ctx the parse tree
 	 */
-	void exitArgList(LogicPLParser.ArgListContext ctx);
+	void exitQuery2(LogicPLParser.Query2Context ctx);
 	/**
 	 * Enter a parse tree produced by {@link LogicPLParser#func}.
 	 * @param ctx the parse tree
@@ -68,6 +118,16 @@ public interface LogicPLListener extends ParseTreeListener {
 	 */
 	void exitFunc(LogicPLParser.FuncContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#funcBody}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncBody(LogicPLParser.FuncBodyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#funcBody}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncBody(LogicPLParser.FuncBodyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link LogicPLParser#funcDec}.
 	 * @param ctx the parse tree
 	 */
@@ -78,15 +138,45 @@ public interface LogicPLListener extends ParseTreeListener {
 	 */
 	void exitFuncDec(LogicPLParser.FuncDecContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link LogicPLParser#argDec}.
+	 * Enter a parse tree produced by {@link LogicPLParser#funcCallStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterArgDec(LogicPLParser.ArgDecContext ctx);
+	void enterFuncCallStmt(LogicPLParser.FuncCallStmtContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link LogicPLParser#argDec}.
+	 * Exit a parse tree produced by {@link LogicPLParser#funcCallStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitArgDec(LogicPLParser.ArgDecContext ctx);
+	void exitFuncCallStmt(LogicPLParser.FuncCallStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#funcCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncCall(LogicPLParser.FuncCallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#funcCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncCall(LogicPLParser.FuncCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#argCall}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgCall(LogicPLParser.ArgCallContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#argCall}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgCall(LogicPLParser.ArgCallContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#argsList}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgsList(LogicPLParser.ArgsListContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#argsList}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgsList(LogicPLParser.ArgsListContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LogicPLParser#arg}.
 	 * @param ctx the parse tree
@@ -97,6 +187,26 @@ public interface LogicPLListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArg(LogicPLParser.ArgContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#rightImplicateStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterRightImplicateStatement(LogicPLParser.RightImplicateStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#rightImplicateStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitRightImplicateStatement(LogicPLParser.RightImplicateStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(LogicPLParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(LogicPLParser.ReturnStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LogicPLParser#expression}.
 	 * @param ctx the parse tree
@@ -188,13 +298,23 @@ public interface LogicPLListener extends ParseTreeListener {
 	 */
 	void exitFactor_(LogicPLParser.Factor_Context ctx);
 	/**
-	 * Enter a parse tree produced by {@link LogicPLParser#listType}.
+	 * Enter a parse tree produced by {@link LogicPLParser#assignment}.
 	 * @param ctx the parse tree
 	 */
-	void enterListType(LogicPLParser.ListTypeContext ctx);
+	void enterAssignment(LogicPLParser.AssignmentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link LogicPLParser#listType}.
+	 * Exit a parse tree produced by {@link LogicPLParser#assignment}.
 	 * @param ctx the parse tree
 	 */
-	void exitListType(LogicPLParser.ListTypeContext ctx);
+	void exitAssignment(LogicPLParser.AssignmentContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link LogicPLParser#arrayType}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayType(LogicPLParser.ArrayTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LogicPLParser#arrayType}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayType(LogicPLParser.ArrayTypeContext ctx);
 }

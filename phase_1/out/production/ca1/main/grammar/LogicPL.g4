@@ -9,9 +9,14 @@ main
     ;
 
 varDec
+    //: VAR_TYPE ID ASSIGN (FLOAT_VALUE | INT_VALUE | BOOL_VALUE) //    varDeclare:  varType ID{ System.out.println("VarDec : " + $ID.getText()); } (ASSIGN expression)? (COMMA ID { System.out.println("VarDec : " + $ID.getText()); }(ASSIGN expression)?)*endLine
     : VAR_TYPE (LBRACE INT_VALUE RBRACE)? ID { System.out.println("VarDec: " + $ID.getText()); } (ASSIGN expression)? (COMMA ID (ASSIGN expression)?)* SEMICOLON
     ;
 
+//varDec
+//    :   VAR_TYPE ID { System.out.println("VarDec : " + $ID.getText()); } (ASSIGN expression)? SEMICOLON
+//    |   assignment
+//    ;
 print
     : { System.out.println("Built-in: print");} PRINT LPAR (query1 | query2 | ID) RPAR SEMICOLON
     ;
@@ -20,6 +25,8 @@ loop
     : { System.out.println("Loop: for");} FOR LPAR ID COLON ID RPAR LBRACK body* RBRACK
     ;
 
+//////////////////////////////////query: query1 | query2
+//loopBodyContent
 body
     : varDec
     | loop
@@ -35,7 +42,7 @@ body
     ;
 
 implication
-    : { System.out.println("Implication"); } LPAR expression RPAR ARROW_FUNC LPAR rightImplicateStatement RPAR
+    : { System.out.println("Implication") } LPAR expression RPAR ARROW_FUNC LPAR rightImplicateStatement RPAR
     ;
 
 predicate
@@ -51,12 +58,17 @@ query2
     ;
 
 func
+//    :   funcDec ':' (if_ | returnStatement)
+//    |   funcDec ':' '{' body '}'
     : funcDec COLON VAR_TYPE LBRACK funcBody RBRACK
     ;
 
 funcBody
-    : (body)* returnStatement (body)*
+    : (body)*
+      returnStatement
+      (body)*
     | (body)*
+
     ;
 
 funcDec
@@ -68,7 +80,7 @@ funcCallStmt
     ;
 
 funcCall
-    : ID argCall
+    : ID argCall ////////////////////////semicolon
     ;
 
 argCall
@@ -78,71 +90,97 @@ argCall
 
 argsList
     : LPAR (VAR_TYPE arg COMMA)* (VAR_TYPE arg) RPAR
-    | LPAR RPAR
+    | LPAR RPAR ////////////////////////////////////////////////////in function a = 3
     ;
 
 arg
-    : ID { System.out.println("ArgumentDec: " + $ID.getText()); }
+    :   ID { System.out.println("ArgumentDec: " + $ID.getText()); }
     ;
 
+//leftImplicateStatement
+//    :   leftStatementSequence (leftStatementSequence)*
+//    ;
+//
+//leftStatementSequence
+//    :   expression
+//    ;
+
 rightImplicateStatement
-    : (predicate | returnStatement | assignment | funcCallStmt)+ ////add function call statement
+    :   (predicate | returnStatement | assignment | funcCallStmt)+ ////add function call statement
     ;
 
 returnStatement
-    : RETURN {System.out.println("Return");} (expression)? SEMICOLON
+    :   RETURN {System.out.println("Return");} (expression)? SEMICOLON
     ;
 
 expression
-    : expression OR orExpression { System.out.println("Operator: ||"); }
-    | orExpression
+    :   expression OR orExpression { System.out.println("Operator: ||"); }
+    |   orExpression
     ;
+//statement
+//    :   varDeclare
 
 orExpression
-    : orExpression AND andExpression { System.out.println("Operator: &&"); }
-    | andExpression
+    :   orExpression AND andExpression { System.out.println("Operator: &&"); }
+    |   andExpression
     ;
 
 
 andExpression
-    : andExpression EQUAL isNotExpression { System.out.println("Operator: =="); }
-    | andExpression NOT_EQUAL isNotExpression { System.out.println("Operator: !="); }
-    | isNotExpression
+    :   andExpression EQUAL isNotExpression { System.out.println("Operator: =="); }
+    |   andExpression NOT_EQUAL isNotExpression { System.out.println("Operator: !="); }
+    |   isNotExpression
     ;
 
 isNotExpression
-    : isNotExpression LT ltgtExpression { System.out.println("Operator: <"); }
-    | isNotExpression LT_EQ ltgtExpression { System.out.println("Operator: <="); }
-    | isNotExpression GT ltgtExpression { System.out.println("Operator: >"); }
-    | isNotExpression GT_EQ ltgtExpression { System.out.println("Operator: >="); }
-    | ltgtExpression
+    :   isNotExpression LT ltgtExpression { System.out.println("Operator: <"); }
+    |   isNotExpression LT_EQ ltgtExpression { System.out.println("Operator: <="); }
+    |   isNotExpression GT ltgtExpression { System.out.println("Operator: >"); }
+    |   isNotExpression GT_EQ ltgtExpression { System.out.println("Operator: >="); }
+    |   ltgtExpression
     ;
 
 ltgtExpression
-    : ltgtExpression PLUS addSubExpression { System.out.println("Operator: +"); }
-    | ltgtExpression MINUS addSubExpression { System.out.println("Operator: -"); }
-    | addSubExpression
+    :   ltgtExpression PLUS addSubExpression { System.out.println("Operator: +"); }
+    |   ltgtExpression MINUS addSubExpression { System.out.println("Operator: -"); }
+    |   addSubExpression
     ;
 
 addSubExpression
-    : addSubExpression MULT mulDivExpression { System.out.println("Operator: *"); }
-    | addSubExpression DIV mulDivExpression { System.out.println("Operator: /"); }
-    | addSubExpression MODE mulDivExpression { System.out.println("Operator: %"); }
-    | mulDivExpression
+    :   addSubExpression MULT mulDivExpression { System.out.println("Operator: *"); }
+    |   addSubExpression DIV mulDivExpression { System.out.println("Operator: /"); }
+    |   addSubExpression MODE mulDivExpression { System.out.println("Operator: %"); }
+    |   mulDivExpression
     ;
 
 mulDivExpression
-    : PLUS tildaNegOperator { System.out.println("Operator: +"); }
-    | MINUS tildaNegOperator { System.out.println("Operator: -"); }
-    | NOT tildaNegOperator { System.out.println("Operator: !"); }
-    | tildaNegOperator
+    :   PLUS tildaNegOperator { System.out.println("Operator: +"); }
+    |   MINUS tildaNegOperator { System.out.println("Operator: -"); }
+    |   NOT tildaNegOperator { System.out.println("Operator: !"); }
+    |   tildaNegOperator
     ;
 
 tildaNegOperator
-    : tildaNegOperator LBRACE expression RBRACE
-    | factor_ LBRACE expression RBRACE
-    | factor_
+    :   tildaNegOperator LBRACE expression RBRACE
+    |   factor_ LBRACE expression RBRACE
+    |   factor_
     ;
+
+//factor_
+//    :   LPAR expression RPAR
+////    |   functionCall
+////    |   anonymousFunctionCall
+////    |   anonymousFunction
+//    |   INT_VALUE
+//    |   BOOL_VALUE
+//    |   ID
+//    |   FLOAT_VALUE
+//    |   arrayType
+//    |   predicate
+//    |   query1
+//    |   query2
+////    |   listType
+//    ;
 
 factor_
     : LPAR expression RPAR
@@ -162,6 +200,7 @@ assignment
 
 arrayType
     : LBRACE ((expression) COMMA)* (expression) RBRACE
+//    | LBRACE RBRACE
     ;
 
 BOOL_VALUE
@@ -230,6 +269,10 @@ FLOAT_VALUE
     | '0' ///////////////////////////////////////zero
    ;
 
+//INT_GT0
+//    : [1-9][0-9]*
+//    ;
+
 LINE_COMMENT
     : '#' ~[\r\n]*
       -> skip
@@ -237,21 +280,21 @@ LINE_COMMENT
 
 fragment
 NON_DIGIT
-    : [a-zA-Z_]
+    :   [a-zA-Z_]
     ;
 fragment
 DIGIT
-    : [0-9]
+    :   [0-9]
     ;
 
 fragment
 LOWER_ALPH
-    : [a-z]
+    :   [a-z]
     ;
 
 fragment
 UPPER_ALPH
-    : [A-Z]
+    :   [A-Z]
     ;
 
 ID
@@ -259,10 +302,10 @@ ID
     ;
 
 WHITE_SPACE
-    : [ \t]+
-     -> skip
+    :   [ \t]+
+        -> skip
     ;
-
+////////////////////////////////////////////////////////////
 LPAR
     : '('
     ;
@@ -364,8 +407,8 @@ LBRACK
     ;
 
 RBRACK
-    : '}'
-    ;
+     : '}'
+     ;
 
 QUESTION_MARK
     : '?'
@@ -373,5 +416,7 @@ QUESTION_MARK
 
 NEW_LINE
     :   (   '\r' '\n'?
-    | '\n'  ) -> skip
+        |   '\n'
+        )
+        -> skip
     ;
