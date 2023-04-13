@@ -10,7 +10,7 @@ main
 
 varDec
     //: VAR_TYPE ID ASSIGN (FLOAT_VALUE | INT_VALUE | BOOL_VALUE) //    varDeclare:  varType ID{ System.out.println("VarDec : " + $ID.getText()); } (ASSIGN expression)? (COMMA ID { System.out.println("VarDec : " + $ID.getText()); }(ASSIGN expression)?)*endLine
-    : VAR_TYPE (LBRACE INT_VALUE RBRACE)? ID (ASSIGN expression)? (COMMA ID (ASSIGN expression)?)* SEMICOLON
+    : VAR_TYPE (LBRACE INT_VALUE RBRACE)? ID { System.out.println("VarDec: " + $ID.getText()); } (ASSIGN expression)? (COMMA ID (ASSIGN expression)?)* SEMICOLON
     ;
 
 //varDec
