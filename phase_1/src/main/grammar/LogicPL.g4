@@ -1,19 +1,27 @@
 grammar LogicPL;
 
+
 logicPL
-    :   (func)* main EOF
+    : (func)* main EOF
     ;
 
 main
     : MAIN { System.out.println("MainBody"); } LBRACK body* RBRACK
     ;
 
-varDec
-    : VAR_TYPE (LBRACE INT_VALUE RBRACE)? ID { System.out.println("VarDec: " + $ID.getText()); } (ASSIGN expression)? (COMMA ID (ASSIGN expression)?)* SEMICOLON
+nonExpVal
+    : (((MINUS { System.out.println("Operator: -"); } | PLUS { System.out.println("Operator: +"); }| ) (INT_VALUE | FLOAT_VALUE)) | '0' | BOOL_VALUE | ID)
+      (COMMA(((MINUS { System.out.println("Operator: -"); }| PLUS { System.out.println("Operator: +"); }| ) (INT_VALUE | FLOAT_VALUE)) | '0' | BOOL_VALUE | ID))*
     ;
 
+varDec
+    : ((VAR_TYPE (LBRACE INT_VALUE RBRACE) ID { System.out.println("VarDec: " + $ID.getText()); } (ASSIGN LBRACE nonExpVal RBRACE)?)
+       |(VAR_TYPE  ID { System.out.println("VarDec: " + $ID.getText()); } (ASSIGN expression)?))
+      SEMICOLON
+
+    ;
 print
-    : { System.out.println("Built-in: print");} PRINT LPAR (query1 | query2 | ID) RPAR SEMICOLON
+    : { System.out.println("Built-in: print");} PRINT LPAR (query1 | query2 | variable) RPAR SEMICOLON
     ;
 
 loop
@@ -25,13 +33,9 @@ body
     | loop
     | implication
     | predicate
-//    | query1
-//    | query2
     | returnStatement
     | assignment
     | print
-//    | expression
-    | funcCallStmt  /////add function call statement
     ;
 
 implication
@@ -39,15 +43,20 @@ implication
     ;
 
 predicate
-    : PRED_NAME { System.out.println("Predicate: " + $PRED_NAME.getText()); } LPAR ID  RPAR SEMICOLON
+    : PRED_NAME { System.out.println("Predicate: " + $PRED_NAME.getText()); } LPAR variable  RPAR SEMICOLON
+    ;
+
+variable
+    : ID LBRACE expression RBRACE
+    | ID
     ;
 
 query1
-    : LBRACE QUESTION_MARK PRED_NAME LPAR ID RPAR RBRACE
+    : LBRACE QUESTION_MARK PRED_NAME { System.out.println("Predicate: " + $PRED_NAME.getText()); } LPAR variable RPAR RBRACE
     ;
 
 query2
-    : LBRACE PRED_NAME LPAR QUESTION_MARK RPAR RBRACE
+    : LBRACE PRED_NAME { System.out.println("Predicate: " + $PRED_NAME.getText()); } LPAR QUESTION_MARK RPAR RBRACE
     ;
 
 func
@@ -61,10 +70,6 @@ funcBody
 
 funcDec
     : FUNCTION ID { System.out.println("FunctionDec: " + $ID.getText()); } argsList
-    ;
-
-funcCallStmt
-    : {System.out.println("FunctionCall");} funcCall SEMICOLON
     ;
 
 funcCall
@@ -86,75 +91,75 @@ arg
     ;
 
 rightImplicateStatement
-    : (predicate | returnStatement | assignment | funcCallStmt)+ ////add function call statement
+    : body+
     ;
 
 returnStatement
-    : RETURN {System.out.println("Return");} (expression)? SEMICOLON
+    : RETURN {System.out.println("Return");} (nonExpVal)? SEMICOLON
     ;
 
 expression
-    : orExpression expression_
+    : orExp expression_
     ;
 
 expression_
-    : OR orExpression { System.out.println("Operator: ||"); } expression_
+    : OR orExp expression_ { System.out.println("Operator: ||"); }
     |
     ;
 
-orExpression
-    : andExpression orExpression_
+orExp
+    : andExp orExp_
     ;
 
-orExpression_
-    : AND andExpression { System.out.println("Operator: &&"); } orExpression_
+orExp_
+    : AND andExp orExp_ { System.out.println("Operator: &&"); }
     |
     ;
 
-andExpression
-    : isNotExpression andExpression_
+andExp
+    : eqNoteqExp andExp_
     ;
 
-andExpression_
-    : EQUAL isNotExpression { System.out.println("Operator: =="); } andExpression_
-    | NOT_EQUAL isNotExpression { System.out.println("Operator: !="); } andExpression_
+andExp_
+    : EQUAL eqNoteqExp andExp_ { System.out.println("Operator: =="); }
+    | NOT_EQUAL eqNoteqExp andExp_ { System.out.println("Operator: !="); }
     |
     ;
 
-isNotExpression
-    : ltGtExpression isNotExpression_
+eqNoteqExp
+    : ltGtExp eqNoteqExp_
     ;
 
-isNotExpression_
-    : LT ltGtExpression { System.out.println("Operator: <"); } isNotExpression_
-    | LT_EQ ltGtExpression { System.out.println("Operator: <="); } isNotExpression_
-    | GT ltGtExpression { System.out.println("Operator: >"); } isNotExpression_
-    | GT_EQ ltGtExpression { System.out.println("Operator: >="); } isNotExpression_
+eqNoteqExp_
+    : LT ltGtExp eqNoteqExp_ { System.out.println("Operator: <"); }
+    | LT_EQ ltGtExp eqNoteqExp_ { System.out.println("Operator: <="); }
+    | GT ltGtExp eqNoteqExp_ { System.out.println("Operator: >"); }
+    | GT_EQ ltGtExp eqNoteqExp_ { System.out.println("Operator: >="); }
     |
     ;
 
-ltGtExpression
-    : addSubExpression ltGtExpression_
+ltGtExp
+    : addSubExp ltGtExp_
     ;
 
-ltGtExpression_
-    : PLUS addSubExpression { System.out.println("Operator: +"); } ltGtExpression_
-    | MINUS addSubExpression { System.out.println("Operator: -"); } ltGtExpression_
+ltGtExp_
+    : PLUS addSubExp  ltGtExp_ { System.out.println("Operator: +"); }
+    | MINUS addSubExp  ltGtExp_ { System.out.println("Operator: -"); }
     |
     ;
 
-addSubExpression
-    : multiDivExpression addSubExpression_
+addSubExp
+    : multiDivExp addSubExp_
     ;
 
-addSubExpression_
-    : MULT multiDivExpression { System.out.println("Operator: *"); } addSubExpression_
-    | DIV multiDivExpression { System.out.println("Operator: /"); } addSubExpression_
-    | MODE multiDivExpression { System.out.println("Operator: %"); } addSubExpression_
+addSubExp_
+    : MULT multiDivExp  addSubExp_ { System.out.println("Operator: *"); }
+    | DIV multiDivExp  addSubExp_ { System.out.println("Operator: /"); }
+    | MODE multiDivExp  addSubExp_ { System.out.println("Operator: %"); }
     |
     ;
 
-multiDivExpression
+multiDivExp
     : PLUS braceOperator { System.out.println("Operator: +"); }
     | MINUS braceOperator { System.out.println("Operator: -"); }
     | NOT braceOperator { System.out.println("Operator: !"); }
@@ -162,9 +167,13 @@ multiDivExpression
     ;
 
 braceOperator
-    : braceOperator LBRACE expression RBRACE
-    | factor LBRACE expression RBRACE
-    | factor
+    : factor LBRACE expression RBRACE braceOperator_
+    | factor braceOperator_
+    ;
+
+braceOperator_
+    : LBRACE expression RBRACE braceOperator_
+    |
     ;
 
 factor
@@ -244,13 +253,11 @@ PRED_NAME
 
 INT_VALUE
     : [1-9][0-9]*
-//    | '0'
     ;
 
 FLOAT_VALUE
     : '0' DOT [0-9]*
-    | [1-9][0-9]*
-    | '0' ///////////////////////////////////////zero
+    | [1-9][0-9]* DOT [0-9]*
    ;
 
 LINE_COMMENT
@@ -310,6 +317,10 @@ PLUS
     : '+'
     ;
 
+NOT_EQUAL
+    : '!='
+    ;
+
 NOT
     : '!'
     ;
@@ -344,10 +355,6 @@ GT
 
 EQUAL
     : '=='
-    ;
-
-NOT_EQUAL
-    : '!='
     ;
 
 ARROW_FUNC
