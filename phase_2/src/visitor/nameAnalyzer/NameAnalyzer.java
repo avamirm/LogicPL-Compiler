@@ -16,7 +16,9 @@ import java.util.ArrayList;
 public class NameAnalyzer extends Visitor<Void> {
 
     public ArrayList<CompileError> nameErrors = new ArrayList<>();
-
+    //
+    private static int counter = 0;
+//
     @Override
     public Void visit(Program program) {
         SymbolTable.root = new SymbolTable();
@@ -43,8 +45,23 @@ public class NameAnalyzer extends Visitor<Void> {
         functionItem.setFunctionSymbolTable(functionSymbolTable);
 
         // ToDo
-
-
+        boolean isFinished = false;
+        while (!isFinished)
+        {
+            try
+            {
+                SymbolTable.top.put(functionItem);
+                isFinished = true;
+            }
+            catch (ItemAlreadyExistsException itemAlreadyExistsException)
+            {
+                FunctionRedefinition errorFunctionRedefinition = new FunctionRedefinition(funcDeclaration.getLine(), funcDeclaration.getName().getName());
+                this.nameErrors.add(errorFunctionRedefinition);
+                functionItem.setName(funcDeclaration.getName().getName() + "$%:)" + counter);
+            }
+            counter += 1;
+        }
+//
         for (ArgDeclaration varDeclaration : funcDeclaration.getArgs()) {
             varDeclaration.accept(this);
         }
@@ -64,7 +81,16 @@ public class NameAnalyzer extends Visitor<Void> {
         var variableItem = new VariableItem(varDeclaration.getIdentifier().getName(), varDeclaration.getType());
 
         // ToDo
-
+        try
+        {
+            SymbolTable.top.put(variableItem);
+        }
+        catch (ItemAlreadyExistsException itemAlreadyExistsException)
+        {
+            VariableRedefinition errorVariableRedefinition = new VariableRedefinition(varDeclaration.getLine(), varDeclaration.getIdentifier().getName());
+            this.nameErrors.add(errorVariableRedefinition);
+        }
+//
         return null;
     }
 }
