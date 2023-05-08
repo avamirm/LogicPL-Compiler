@@ -9,6 +9,8 @@ import ast.node.expression.values.*;
 import ast.node.statement.*;
 import visitor.Visitor;
 
+import java.util.Iterator;
+
 public class ASTPrinter extends Visitor<Void> {
     public void messagePrinter(int line, String message){
         System.out.println("Line " + line + ": " + message);
@@ -43,10 +45,14 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(FuncDeclaration funcDeclaration) {
         // ToDo
         messagePrinter(funcDeclaration.getLine(), funcDeclaration.toString());
-        funcDeclaration.getName().accept(this);
-        for (Identifier arg: funcDeclaration.getArgs())
+        if (funcDeclaration.getIdentifier() != null)
+            funcDeclaration.getIdentifier().accept(this);
+
+        for (ArgDeclaration arg: funcDeclaration.getArgs())
             arg.accept(this);
-        funcDeclaration.getStatements().accept(this);////////////////
+
+        for (Statement stmt: funcDeclaration.getStatements())
+            stmt.accept(this);
         return null;
     }
 
@@ -54,7 +60,8 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(UnaryExpression unaryExpression) {
         // ToDo
         messagePrinter(unaryExpression.getLine(), unaryExpression.toString());
-        unaryExpression.getOperand().accept(this);
+        if (unaryExpression.getOperand() != null)
+            unaryExpression.getOperand().accept(this);
         return null;
     }
 
@@ -62,8 +69,10 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(BinaryExpression binaryExpression) {
         // ToDo
         messagePrinter(binaryExpression.getLine(), binaryExpression.toString());
-        binaryExpression.getLeft().accept(this);
-        binaryExpression.getRight().accept(this);
+        if (binaryExpression.getLeft() != null)
+            binaryExpression.getLeft().accept(this);
+        if (binaryExpression.getRight() != null)
+            binaryExpression.getRight().accept(this);
         return null;
     }
 
@@ -78,7 +87,8 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(ArrayAccess arrayAccess) {
         // ToDo
         messagePrinter(arrayAccess.getLine(), arrayAccess.toString());
-        arrayAccess.getIndex().accept(this);
+        if (arrayAccess.getIndex() != null)
+            arrayAccess.getIndex().accept(this);
         return null;
     }
 
@@ -86,7 +96,8 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(FunctionCall functionCall) {
         // ToDo
         messagePrinter(functionCall.getLine(), functionCall.toString());
-        functionCall.getUFuncName().accept(this);////////////////////
+        if (functionCall.getUFuncName() != null)
+            functionCall.getUFuncName().accept(this);
         for (Expression args: functionCall.getArgs())
             args.accept(this);
         return null;
@@ -96,8 +107,10 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(QueryExpression queryExpression) {
         // ToDo
         messagePrinter(queryExpression.getLine(), queryExpression.toString());
-        queryExpression.getPredicateName().accept(this);
-        queryExpression.getVar().accept(this);
+        if (queryExpression.getPredicateName() != null)
+            queryExpression.getPredicateName().accept(this);
+        if (queryExpression.getVar() != null)
+            queryExpression.getVar().accept(this);
         return null;
     }
 
@@ -123,42 +136,50 @@ public class ASTPrinter extends Visitor<Void> {
     }
 
     @Override
-    public Void visit(ArrayDecStmt arrayDecStmt) {//////////////////////
+    public Void visit(ArrayDecStmt arrayDecStmt) {
         // ToDo
         messagePrinter(arrayDecStmt.getLine(), arrayDecStmt.toString());
-        arrayDecStmt.getType().accept(this);
-        arrayDecStmt.getArrSize ().accept(this);
-        arrayDecStmt.getIdentifier().accept(this);
+        if (arrayDecStmt.getIdentifier() != null)
+            arrayDecStmt.getIdentifier().accept(this);
+        for (Expression expr: arrayDecStmt.getInitialValues())
+            expr.accept(this);
 
         return null;
     }
 
     @Override
-    public Void visit(ForloopStmt forloopStmt) {////////////////////////////////////////////////
+    public Void visit(ForloopStmt forloopStmt) {
         // ToDo
         messagePrinter(forloopStmt.getLine(), forloopStmt.toString());
-        forloopStmt.getIterator().accept(this);
-        forloopStmt.getArrayName().accept(this);
-        forloopStmt.getStatements().accept(this);
+        if (forloopStmt.getIterator() != null)
+            forloopStmt.getIterator().accept(this);
+        if (forloopStmt.getArrayName() != null)
+            forloopStmt.getArrayName().accept(this);
+        for (Statement stmt: forloopStmt.getStatements())
+            stmt.accept(this);
 
         return null;
     }
 
     @Override
-    public Void visit(ImplicationStmt implicationStmt) {//////////////////////////////
+    public Void visit(ImplicationStmt implicationStmt) {
         // ToDo
         messagePrinter(implicationStmt.getLine(), implicationStmt.toString());
-        implicationStmt.getCondition().accept(this);
-        implicationStmt.getStatements().accept(this);
+        if (implicationStmt.getCondition() != null)
+            implicationStmt.getCondition().accept(this);
+        for (Statement stmt: implicationStmt.getStatements())
+            stmt.accept(this);
         return null;
     }
 
     @Override
-    public Void visit(PredicateStmt predicateStmt) {////////////////////////////////
+    public Void visit(PredicateStmt predicateStmt) {
         // ToDo
         messagePrinter(predicateStmt.getLine(), predicateStmt.toString());
-        predicateStmt.getIdentifier().accept(this);
-        predicateStmt.getVar().accept(this);
+        if (predicateStmt.getIdentifier() != null)
+            predicateStmt.getIdentifier().accept(this);
+        if (predicateStmt.getVar() != null)
+            predicateStmt.getVar().accept(this);
         return null;
     }
 
@@ -166,16 +187,21 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(ReturnStmt returnStmt) {
         // ToDo
         messagePrinter(returnStmt.getLine(), returnStmt.toString());
-        returnStmt.getExpression().accept(this);
+        if (returnStmt.getExpression() != null)
+            returnStmt.getExpression().accept(this);
         return null;
     }
 
     @Override
-    public Void visit(VarDecStmt varDecStmt) {////////////////////////////
+    public Void visit(VarDecStmt varDecStmt) {
         // ToDo
         messagePrinter(varDecStmt.getLine(), varDecStmt.toString());
-        varDecStmt.getType().accept();
-        varDecStmt.getIdentifier.accept();
+        if (varDecStmt.getIdentifier() != null)
+            varDecStmt.getIdentifier().accept(this);
+
+        if (varDecStmt.getInitialExpression() != null)
+            varDecStmt.getInitialExpression().accept(this);
+
         return null;
     }
 
@@ -183,7 +209,8 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(PrintStmt printStmt) {
         // ToDo
         messagePrinter(printStmt.getLine(), printStmt.toString());
-        printStmt.getArg().accept(this);
+        if (printStmt.getArg() != null)
+            printStmt.getArg().accept(this);
         return null;
     }
 
@@ -191,8 +218,10 @@ public class ASTPrinter extends Visitor<Void> {
     public Void visit(AssignStmt assignStmt) {
         // ToDo
         messagePrinter(assignStmt.getLine(), assignStmt.toString());
-        assignStmt.getLValue().accept(this);
-        assignStmt.getRValue().accept(this);
+        if (assignStmt.getLValue() != null)
+            assignStmt.getLValue().accept(this);
+        if (assignStmt.getRValue() != null)
+            assignStmt.getRValue().accept(this);
         return null;
     }
 
