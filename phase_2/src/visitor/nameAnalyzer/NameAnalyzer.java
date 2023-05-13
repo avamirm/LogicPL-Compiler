@@ -75,7 +75,7 @@ public class NameAnalyzer extends Visitor<Void> {
         for (var stmt : funcDeclaration.getStatements())
         {
             if(stmt instanceof VarDecStmt || stmt instanceof ArrayDecStmt ||
-                    stmt instanceof ForloopStmt || stmt instanceof ImplicationStmt)
+               stmt instanceof ForloopStmt || stmt instanceof ImplicationStmt)
             {
                 stmt.accept(this);
             }
