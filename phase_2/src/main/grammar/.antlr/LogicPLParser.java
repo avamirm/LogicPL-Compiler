@@ -1378,7 +1378,7 @@ public class LogicPLParser extends Parser {
 				{
 				setState(306);
 				((ForLoopContext)_localctx).stmt = statement();
-				bodystmts.add(((ForLoopContext)_localctx).stmt.statementRet)
+				bodyStmts.add(((ForLoopContext)_localctx).stmt.statementRet);
 				}
 				}
 				setState(313);
@@ -1618,7 +1618,7 @@ public class LogicPLParser extends Parser {
 						{
 							bep = new BinaryExpression(((Expression2Context)_localctx).l.exprRet, ((Expression2Context)_localctx).r.binaryExprRet.getRight(), ((Expression2Context)_localctx).r.binaryExprRet.getBinaryOperator());
 							bep.setLine(((Expression2Context)_localctx).r.binaryExprRet.getLine());
-							binaryExprRet = new BinaryExpression(null, ((Expression2Context)_localctx).l.exprRet, BinaryOperator.or);
+							((Expression2Context)_localctx).binaryExprRet =  new BinaryExpression(null, ((Expression2Context)_localctx).l.exprRet, BinaryOperator.or);
 						}
 						else
 						{
@@ -1742,7 +1742,7 @@ public class LogicPLParser extends Parser {
 						{
 							bep = new BinaryExpression(((AndExpr2Context)_localctx).l.exprRet, ((AndExpr2Context)_localctx).r.binaryExprRet.getRight(), ((AndExpr2Context)_localctx).r.binaryExprRet.getBinaryOperator());
 							bep.setLine(((AndExpr2Context)_localctx).r.binaryExprRet.getLine());
-							binaryExprRet = new BinaryExpression(null, bep, BinaryOperator.and);
+							((AndExpr2Context)_localctx).binaryExprRet =  new BinaryExpression(null, bep, BinaryOperator.and);
 						}
 						else
 						{
@@ -1887,11 +1887,11 @@ public class LogicPLParser extends Parser {
 							{
 								bep = new BinaryExpression(((EqExpr2Context)_localctx).l.exprRet, ((EqExpr2Context)_localctx).r.binaryExprRet.getRight(), ((EqExpr2Context)_localctx).r.binaryExprRet.getBinaryOperator());
 								bep.setLine(((EqExpr2Context)_localctx).r.binaryExprRet.getLine());
-								binaryExprRet = new BinaryExpression(null, bep, opt);
+								((EqExpr2Context)_localctx).binaryExprRet =  new BinaryExpression(null, bep, bop);
 							}
 							else
 							{
-								((EqExpr2Context)_localctx).binaryExprRet =  new BinaryExpression(null, ((EqExpr2Context)_localctx).l.exprRet, opt);
+								((EqExpr2Context)_localctx).binaryExprRet =  new BinaryExpression(null, ((EqExpr2Context)_localctx).l.exprRet, bop);
 							}
 						
 				_localctx.binaryExprRet.setLine(((EqExpr2Context)_localctx).op.getLine());
@@ -2051,7 +2051,7 @@ public class LogicPLParser extends Parser {
 							{
 								bep = new BinaryExpression(((CompExpr2Context)_localctx).l.exprRet, ((CompExpr2Context)_localctx).r.binaryExprRet.getRight(), ((CompExpr2Context)_localctx).r.binaryExprRet.getBinaryOperator());
 								bep.setLine(((CompExpr2Context)_localctx).r.binaryExprRet.getLine());
-								binaryExprRet = new BinaryExpression(null, bep, bop);
+								((CompExpr2Context)_localctx).binaryExprRet =  new BinaryExpression(null, bep, bop);
 							}
 							else
 							{
@@ -2199,10 +2199,10 @@ public class LogicPLParser extends Parser {
 							{
 								bep = new BinaryExpression(((Additive2Context)_localctx).l.exprRet, ((Additive2Context)_localctx).r.binaryExprRet.getRight(), ((Additive2Context)_localctx).r.binaryExprRet.getBinaryOperator());
 								bep.setLine(((Additive2Context)_localctx).r.binaryExprRet.getLine());
-								binaryExprRet = new BinaryExpression(null, bep, bop);}
+								((Additive2Context)_localctx).binaryExprRet =  new BinaryExpression(null, bep, bop);}
 							else
 							{
-								((Additive2Context)_localctx).binaryExprRet =  new BinaryExpression(null, ((Additive2Context)_localctx).l.exprRet, opt);
+								((Additive2Context)_localctx).binaryExprRet =  new BinaryExpression(null, ((Additive2Context)_localctx).l.exprRet, bop);
 							}
 						
 				_localctx.binaryExprRet.setLine(((Additive2Context)_localctx).op.getLine());
@@ -2355,7 +2355,7 @@ public class LogicPLParser extends Parser {
 						    {
 								bep = new BinaryExpression(((Multicative2Context)_localctx).l.exprRet, ((Multicative2Context)_localctx).r.binaryExprRet.getRight(), ((Multicative2Context)_localctx).r.binaryExprRet.getBinaryOperator());
 						    	bep.setLine(((Multicative2Context)_localctx).r.binaryExprRet.getLine());
-								binaryExprRet = new BinaryExpression(null, bep, bop);
+								((Multicative2Context)_localctx).binaryExprRet =  new BinaryExpression(null, bep, bop);
 							}
 						    else
 							{
@@ -2428,7 +2428,7 @@ public class LogicPLParser extends Parser {
 				{
 				setState(449);
 				((UnaryContext)_localctx).otherRet = other();
-				((UnaryContext)_localctx).exprRet =  otherRet.exprRet;
+				((UnaryContext)_localctx).exprRet =  ((UnaryContext)_localctx).otherRet.exprRet;
 				}
 				break;
 			case 2:
@@ -2464,7 +2464,7 @@ public class LogicPLParser extends Parser {
 				}
 				setState(461);
 				((UnaryContext)_localctx).oth = other();
-				exprRet = new UnaryExpression(uop, oth.exprRet); _localctx.exprRet.setLine(op.getLine();)
+				((UnaryContext)_localctx).exprRet =  new UnaryExpression(uop, ((UnaryContext)_localctx).oth.exprRet); _localctx.exprRet.setLine(((UnaryContext)_localctx).op.getLine());
 				}
 				break;
 			}
@@ -2526,7 +2526,7 @@ public class LogicPLParser extends Parser {
 				((OtherContext)_localctx).expr = expression();
 				setState(468);
 				match(RPAR);
-				((OtherContext)_localctx).exprRet =  expr.exprRet;
+				((OtherContext)_localctx).exprRet =  ((OtherContext)_localctx).expr.exprRet;
 				}
 				break;
 			case 2:
@@ -2575,7 +2575,7 @@ public class LogicPLParser extends Parser {
 	}
 
 	public static class FunctionCallContext extends ParserRuleContext {
-		public functionCall funcCallRet;
+		public FunctionCall funcCallRet;
 		public IdentifierContext name;
 		public ExpressionContext arg;
 		public ExpressionContext e;
@@ -2687,7 +2687,7 @@ public class LogicPLParser extends Parser {
 				{
 				setState(504);
 				((ValueContext)_localctx).v = numericValue();
-				_localctx.valueRet v.v
+				((ValueContext)_localctx).valueRet =  ((ValueContext)_localctx).v.v;
 				}
 				break;
 			case TRUE:
@@ -2801,7 +2801,7 @@ public class LogicPLParser extends Parser {
 			{
 			setState(525);
 			((IdentifierContext)_localctx).idn = match(IDENTIFIER);
-			((IdentifierContext)_localctx).identifierRet =  new Var(((IdentifierContext)_localctx).idn.getText()); _localctx.identifierRet.setLine(((IdentifierContext)_localctx).idn.getLine());
+			((IdentifierContext)_localctx).identifierRet =  new Identifier(((IdentifierContext)_localctx).idn.getText()); _localctx.identifierRet.setLine(((IdentifierContext)_localctx).idn.getLine());
 			}
 		}
 		catch (RecognitionException re) {

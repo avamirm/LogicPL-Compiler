@@ -123,7 +123,7 @@ returnSmt returns [ReturnStmt returnRet]:
 forLoop returns [ForloopStmt forLoopRet]:
     {ArrayList<Statement> bodyStmts = new ArrayList<>();}
 	forLine = FOR LPAR idn = identifier COLON arrName = identifier RPAR LBRACE (
-		(stmt = statement{bodystmts.add($stmt.statementRet)})*) RBRACE
+		(stmt = statement{bodyStmts.add($stmt.statementRet);})*) RBRACE
     {$forLoopRet = new ForloopStmt($idn.identifierRet, $arrName.identifierRet, bodyStmts); $forLoopRet.setLine($forLine.getLine());}
 	;
 
@@ -161,7 +161,7 @@ expression2 returns [BinaryExpression binaryExprRet]:
 		{
 			bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 			bep.setLine($r.binaryExprRet.getLine());
-			binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.or);
+			$binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.or);
 		}
 		else
 		{
@@ -195,7 +195,7 @@ andExpr2 returns [BinaryExpression binaryExprRet]:
 		{
 			bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 			bep.setLine($r.binaryExprRet.getLine());
-			binaryExprRet = new BinaryExpression(null, bep, BinaryOperator.and);
+			$binaryExprRet = new BinaryExpression(null, bep, BinaryOperator.and);
 		}
 		else
 		{
@@ -232,11 +232,11 @@ eqExpr2 returns [BinaryExpression binaryExprRet]:
 			{
 				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 				bep.setLine($r.binaryExprRet.getLine());
-				binaryExprRet = new BinaryExpression(null, bep, opt);
+				$binaryExprRet = new BinaryExpression(null, bep, bop);
 			}
 			else
 			{
-				$binaryExprRet = new BinaryExpression(null, $l.exprRet, opt);
+				$binaryExprRet = new BinaryExpression(null, $l.exprRet, bop);
 			}
 		}
     	{$binaryExprRet.setLine($op.getLine());}
@@ -271,7 +271,7 @@ compExpr2 returns [BinaryExpression binaryExprRet]:
 			{
 				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 				bep.setLine($r.binaryExprRet.getLine());
-				binaryExprRet = new BinaryExpression(null, bep, bop);
+				$binaryExprRet = new BinaryExpression(null, bep, bop);
 			}
 			else
 			{
@@ -308,10 +308,10 @@ additive2 returns [BinaryExpression binaryExprRet]:
 			{
 				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 				bep.setLine($r.binaryExprRet.getLine());
-				binaryExprRet = new BinaryExpression(null, bep, bop);}
+				$binaryExprRet = new BinaryExpression(null, bep, bop);}
 			else
 			{
-				$binaryExprRet = new BinaryExpression(null, $l.exprRet, opt);
+				$binaryExprRet = new BinaryExpression(null, $l.exprRet, bop);
 			}
 		}
     	{$binaryExprRet.setLine($op.getLine());}
@@ -341,7 +341,7 @@ multicative2 returns [BinaryExpression binaryExprRet]:
 		    {
 				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 		    	bep.setLine($r.binaryExprRet.getLine());
-				binaryExprRet = new BinaryExpression(null, bep, bop);
+				$binaryExprRet = new BinaryExpression(null, bep, bop);
 			}
 		    else
 			{
@@ -353,25 +353,25 @@ multicative2 returns [BinaryExpression binaryExprRet]:
 	;
 
 unary returns [Expression exprRet]:
-    otherRet = other {$exprRet = otherRet.exprRet;}
+    otherRet = other {$exprRet = $otherRet.exprRet;}
     | {UnaryOperator uop;}
     (
         op = PLUS {uop = UnaryOperator.plus;}
         | op = MINUS {uop = UnaryOperator.minus;}
         | op = NOT {uop = UnaryOperator.not;}
         ) oth = other
-        {exprRet = new UnaryExpression(uop, oth.exprRet); $exprRet.setLine(op.getLine();)}
+        {$exprRet = new UnaryExpression(uop, $oth.exprRet); $exprRet.setLine($op.getLine());}
         ;
 
 other returns[Expression exprRet]:
-	LPAR expr = expression RPAR {$exprRet = expr.exprRet;}
+	LPAR expr = expression RPAR {$exprRet = $expr.exprRet;}
 	| var = variable {$exprRet = $var.varRet;}
 	| val = value {$exprRet = $val.valueRet;}
 	| q1 = queryType1 {$exprRet = $q1.query1Ret;}
 	| funcCall = functionCall {$exprRet = $funcCall.funcCallRet;}
 	;
 
-functionCall returns[functionCall funcCallRet]:
+functionCall returns[FunctionCall funcCallRet]:
 	{ArrayList<Expression> exprs = new ArrayList<>();} name = identifier LPAR (
 		arg = expression {exprs.add($arg.exprRet);} (
 		COMMA e = expression {exprs.add($e.exprRet);})*)?
@@ -379,7 +379,7 @@ functionCall returns[functionCall funcCallRet]:
 	;
 
 value returns[Value valueRet]:
-	v = numericValue {$valueRet v.v}
+	v = numericValue {$valueRet = $v.v;}
 	| t = TRUE {$valueRet = new BooleanValue(true); $valueRet.setLine($t.getLine());}
 	| f = FALSE {$valueRet = new BooleanValue(false); $valueRet.setLine($f.getLine());}
 	| MINUS v_ = numericValue {$v_.v.negateConstant(); $valueRet = $v_.v;}
@@ -391,7 +391,7 @@ numericValue returns[Value v]:
 	;
 
 identifier returns[Identifier identifierRet]:
-	idn = IDENTIFIER {$identifierRet = new Var($idn.getText()); $identifierRet.setLine($idn.getLine());}
+	idn = IDENTIFIER {$identifierRet = new Identifier($idn.getText()); $identifierRet.setLine($idn.getLine());}
 	;
 
 predicateIdentifier returns[Identifier predicateIdentifierRet]:
