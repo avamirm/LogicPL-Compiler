@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="760a614d-54aa-43e5-8278-c451c23339a2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main/grammar/LogicPL.g4" beforeDir="false" afterPath="$PROJECT_DIR$/main/grammar/LogicPL.g4" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +37,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/Compiler/CA/LogicPL-Compiler/phase_2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -85,7 +85,8 @@
       <updated>1682182166239</updated>
       <workItem from="1682182167765" duration="6256000" />
       <workItem from="1682363466741" duration="7924000" />
-      <workItem from="1683612478986" duration="1436000" />
+      <workItem from="1683612478986" duration="1600000" />
+      <workItem from="1683958957563" duration="192000" />
     </task>
     <servers />
   </component>

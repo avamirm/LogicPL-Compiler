@@ -36,14 +36,14 @@ mainBlock returns [MainDeclaration main]:
     {$main = new MainDeclaration(mainStmts); $main.setLine($m.getLine());}
     ;
 
-statement returns [Statement stmtRet]:
-    s1 = assignSmt {$stmtRet = $s1.assignStmtRet;}
-	| (s2 = predicate SEMICOLON {$stmtRet = $s2.predicateRet;})
-    | s3 = implication {$stmtRet = $s3.implicationRet;}
-	| s4 = returnSmt {$stmtRet = $s4.returnRet;}
-    | s5 = printSmt {$stmtRet = $s5.PrintStmtRet;}
-	| s6 = forLoop {$stmtRet = $s6.forLoopRet;}
-	| s7 = localVarDeclaration {$stmtRet = $s7.localvarDecRet;}
+statement returns [Statement statementRet]:
+    s1 = assignSmt {$statementRet = $s1.assignStmtRet;}
+	| (s2 = predicate SEMICOLON {$statementRet = $s2.predicateRet;})
+    | s3 = implication {$statementRet = $s3.implicationRet;}
+	| s4 = returnSmt {$statementRet = $s4.returnRet;}
+    | s5 = printSmt {$statementRet = $s5.PrintStmtRet;}
+	| s6 = forLoop {$statementRet = $s6.forLoopRet;}
+	| s7 = localVarDeclaration {$statementRet = $s7.localvarDecRet;}
     ;
 
 assignSmt returns [AssignStmt assignStmtRet]:
@@ -90,7 +90,7 @@ printSmt returns [PrintStmt PrintStmtRet]:
 	;
 
 printExpr returns [Expression printExprRet]:
-    v = variable {$printExprRet = $v.v;}
+    v = variable {$printExprRet = $v.varRet;}
     | q = query {$printExprRet = $q.queryRet;}
     ;
 
@@ -101,7 +101,7 @@ query returns [QueryExpression queryRet]:
 
 queryType1 returns [QueryExpression query1Ret]:
 	LBRACKET line = QUARYMARK predId = predicateIdentifier LPAR var = variable RPAR RBRACKET
-    {$query1Ret = new QueryExpression($preId.predicateIdentifierRet); $query1Ret.setLine($line.getLine()); $query1Ret.setVar($var.v);}
+    {$query1Ret = new QueryExpression($predId.predicateIdentifierRet); $query1Ret.setLine($line.getLine()); $query1Ret.setVar($var.varRet);}
 	;
 
 queryType2 returns [QueryExpression query2Ret]:
@@ -129,7 +129,7 @@ forLoop returns [ForloopStmt forLoopRet]:
 
 predicate returns [PredicateStmt predicateRet]:
  	predIdn = predicateIdentifier LPAR v = variable RPAR
-	{$predicateRet = new PredicateStmt($predIdn.predicateIdentifierRet, $v.v); $predicateRet.setLine($predIdn.predicateIdentifierRet.getLine());}
+	{$predicateRet = new PredicateStmt($predIdn.predicateIdentifierRet, $v.varRet); $predicateRet.setLine($predIdn.predicateIdentifierRet.getLine());}
     ;
 
 implication returns [ImplicationStmt implicationRet]:
@@ -141,10 +141,10 @@ implication returns [ImplicationStmt implicationRet]:
 expression returns [Expression exprRet]:
  	l = andExpr r = expression2
 	{
-		if ($r.exprRet != null)
+		if ($r.binaryExprRet != null)
 		{
-			$exprRet = new BinaryExpression($l.exprRet, $r.exprRet.getRight(), $r.exprRet.getBinaryOperator());
-			$exprRet.setLine($r.exprRet.getLine());
+			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			$exprRet.setLine($r.binaryExprRet.getLine());
 		}
 		else
 		{
@@ -159,13 +159,13 @@ expression2 returns [BinaryExpression binaryExprRet]:
 	{
 		if ($r.binaryExprRet != null)
 		{
-			$bep = new BinaryExpression($l.binaryExprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-			$bep.setLine($r.binaryExprRet.getLine());
-			$binaryExprRet = new BinaryExpression(null, $ee, BinaryOperator.or);
+			bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			bep.setLine($r.binaryExprRet.getLine());
+			binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.or);
 		}
 		else
 		{
-			$binaryExprRet = new BinaryExpression(null, $l.binaryExprRet, BinaryOperator.or);
+			$binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.or);
 		}
 	}
     {$binaryExprRet.setLine($OR.getLine());}
@@ -175,10 +175,10 @@ expression2 returns [BinaryExpression binaryExprRet]:
 andExpr returns [Expression exprRet]:
 	l = eqExpr r = andExpr2
     {
-		if ($r.exprRet != null)
+		if ($r.binaryExprRet != null)
 		{
-			$exprRet = new BinaryExpression($l.exprRet, $r.exprRet.getRight(), $r.exprRet.getBinaryOperator());
-			$exprRet.setLine($r.exprRet.getLine());
+			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			$exprRet.setLine($r.binaryExprRet.getLine());
 		}
 		else
 		{
@@ -193,13 +193,13 @@ andExpr2 returns [BinaryExpression binaryExprRet]:
 	{
 		if ($r.binaryExprRet != null)
 		{
-			$bep = new BinaryExpression($l.binaryExprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-			$bep.setLine($r.binaryExprRet.getLine());
-			$binaryExprRet = new BinaryExpression(null, $bep, BinaryOperator.and);
+			bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			bep.setLine($r.binaryExprRet.getLine());
+			binaryExprRet = new BinaryExpression(null, bep, BinaryOperator.and);
 		}
 		else
 		{
-			$binaryExprRet = new BinaryExpression(null, $l.binaryExprRet, BinaryOperator.and);
+			$binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.and);
 		}
 	}
     {$binaryExprRet.setLine($AND.getLine());}
@@ -209,10 +209,10 @@ andExpr2 returns [BinaryExpression binaryExprRet]:
 eqExpr returns [Expression exprRet]:
 	l = compExpr r = eqExpr2
     {
-		if ($r.exprRet != null)
+		if ($r.binaryExprRet != null)
 		{
-			$exprRet = new BinaryExpression($l.exprRet, $r.exprRet.getRight(), $r.exprRet.getBinaryOperator());
-			$exprRet.setLine($r.exprRet.getLine());
+			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			$exprRet.setLine($r.binaryExprRet.getLine());
 		}
 		else
 		{
@@ -224,19 +224,19 @@ eqExpr returns [Expression exprRet]:
 eqExpr2 returns [BinaryExpression binaryExprRet]:
 	{BinaryOperator bop; BinaryExpression bep;}
 	(
-		op = EQ {$bop = BinaryOperator.eq;}
-		| op = NEQ {$bop = BinaryOperator.neq;})
+		op = EQ {bop = BinaryOperator.eq;}
+		| op = NEQ {bop = BinaryOperator.neq;})
 		l = compExpr r = eqExpr2
 		{
 			if ($r.binaryExprRet != null)
 			{
-				$bep = new BinaryExpression($l.binaryExprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-				$bep.setLine($r.binaryExprRet.getLine());
-				$binaryExprRet = new BinaryExpression(null, $bep, $opt);
+				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+				bep.setLine($r.binaryExprRet.getLine());
+				binaryExprRet = new BinaryExpression(null, bep, opt);
 			}
 			else
 			{
-				$binaryExprRet = new BinaryExpression(null, $l.binaryExprRet, $opt);
+				$binaryExprRet = new BinaryExpression(null, $l.exprRet, opt);
 			}
 		}
     	{$binaryExprRet.setLine($op.getLine());}
@@ -246,10 +246,14 @@ eqExpr2 returns [BinaryExpression binaryExprRet]:
 compExpr returns [Expression exprRet]:
 	l = additive r = compExpr2
     {
-		if ($r.exprRet != null)
+		if ($r.binaryExprRet != null)
 		{
-			$exprRet = new BinaryExpression($l.exprRet, $r.exprRet.getRight(), $r.exprRet.getBinaryOperator());
-			$exprRet.setLine($r.exprRet.getLine());} else {$exprRet = $l.exprRet;
+			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			$exprRet.setLine($r.binaryExprRet.getLine());
+			} 
+		else 
+		{
+			$exprRet = $l.exprRet;
 		}
 	}
     ;
@@ -257,21 +261,21 @@ compExpr returns [Expression exprRet]:
 compExpr2 returns [BinaryExpression binaryExprRet]:
 	{BinaryOperator bop; BinaryExpression bep;}
 	(
-		op = LT {$bop = BinaryOperator.lt;}
-		| op = LTE {$bop = BinaryOperator.lte;}
-		| op = GT {$bop = BinaryOperator.gt;}
-		| op = GTE{$bop = BinaryOperator.gte;})
+		op = LT {bop = BinaryOperator.lt;}
+		| op = LTE {bop = BinaryOperator.lte;}
+		| op = GT {bop = BinaryOperator.gt;}
+		| op = GTE{bop = BinaryOperator.gte;})
 		l = additive r = compExpr2
 		{
 			if ($r.binaryExprRet != null)
 			{
-				$bep = new BinaryExpression($l.binaryExprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-				$bep.setLine($r.binaryExprRet.getLine());
-				$binaryExprRet = new BinaryExpression(null, $bep, $bop);
+				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+				bep.setLine($r.binaryExprRet.getLine());
+				binaryExprRet = new BinaryExpression(null, bep, bop);
 			}
 			else
 			{
-				$binaryExprRet = new BinaryExpression(null, $l.binaryExprRet, $bop);
+				$binaryExprRet = new BinaryExpression(null, $l.exprRet, bop);
 			}
 		}
     	{$binaryExprRet.setLine($op.getLine());}
@@ -281,10 +285,10 @@ compExpr2 returns [BinaryExpression binaryExprRet]:
 additive returns [Expression exprRet]:
  	l = multicative r = additive2
 	{
-		if ($r.exprRet != null)
+		if ($r.binaryExprRet != null)
 		{
-			$exprRet = new BinaryExpression($l.exprRet, $r.exprRet.getRight(), $r.exprRet.getBinaryOperator());
-			$exprRet.setLine($r.exprRet.getLine());
+			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			$exprRet.setLine($r.binaryExprRet.getLine());
 		}
 		else
 		{
@@ -296,18 +300,18 @@ additive returns [Expression exprRet]:
 additive2 returns [BinaryExpression binaryExprRet]:
 	{BinaryOperator bop; BinaryExpression bep;}
 	(
-		op = PLUS {$bop = BinaryOperator.add;}
-		| op = MINUS {$bop = BinaryOperator.sub;})
+		op = PLUS {bop = BinaryOperator.add;}
+		| op = MINUS {bop = BinaryOperator.sub;})
 		l = multicative r = additive2
 		{
 			if ($r.binaryExprRet != null)
 			{
-				$bep = new BinaryExpression($l.binaryExprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-				$bep.setLine($r.binaryExprRet.getLine());
-				$binaryExprRet = new BinaryExpression(null, $bep, $bop);}
+				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+				bep.setLine($r.binaryExprRet.getLine());
+				binaryExprRet = new BinaryExpression(null, bep, bop);}
 			else
 			{
-				$binaryExprRet = new BinaryExpression(null, $l.binaryExprRet, $opt);
+				$binaryExprRet = new BinaryExpression(null, $l.exprRet, opt);
 			}
 		}
     	{$binaryExprRet.setLine($op.getLine());}
@@ -317,10 +321,10 @@ additive2 returns [BinaryExpression binaryExprRet]:
 multicative returns [Expression exprRet]:
 	l =  unary r = multicative2
     {
-		if ($r.exprRet != null)
+		if ($r.binaryExprRet != null)
 		{
-			$exprRet = new BinaryExpression($l.exprRet, $r.exprRet.getRight(), $r.exprRet.getBinaryOperator());
-			$exprRet.setLine($r.exprRet.getLine());} else {$exprRet = $l.exprRet;
+			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+			$exprRet.setLine($r.binaryExprRet.getLine());} else {$exprRet = $l.exprRet;
 		}
 	}
 	;
@@ -328,20 +332,20 @@ multicative returns [Expression exprRet]:
 multicative2 returns [BinaryExpression binaryExprRet]:
 	{BinaryOperator bop; BinaryExpression bep;}
 	(
-		op = MULT {$bop = BinaryOperator.mult;}
-		| op = MOD {$bop = BinaryOperator.mod;}
-		| op = DIV {$bop = BinaryOperator.div;})
+		op = MULT {bop = BinaryOperator.mult;}
+		| op = MOD {bop = BinaryOperator.mod;}
+		| op = DIV {bop = BinaryOperator.div;})
 		l = unary r = multicative2
 		{
 			if ($r.binaryExprRet != null)
 		    {
-				$bep = new BinaryExpression($l.binaryExprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-		    	$bep.setLine($r.binaryExprRet.getLine());
-				$binaryExprRet = new BinaryExpression(null, $bep, $bop);
+				bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+		    	bep.setLine($r.binaryExprRet.getLine());
+				binaryExprRet = new BinaryExpression(null, bep, bop);
 			}
 		    else
 			{
-				$binaryExprRet = new BinaryExpression(null, $l.binaryExprRet, $bop);
+				$binaryExprRet = new BinaryExpression(null, $l.exprRet, bop);
 			}
 		}
     	{$binaryExprRet.setLine($op.getLine());}
@@ -352,16 +356,16 @@ unary returns [Expression exprRet]:
     otherRet = other {$exprRet = otherRet.exprRet;}
     | {UnaryOperator uop;}
     (
-        PLUS {$uop = UnaryOperator.plus;}
-        | MINUS {$uop = UnaryOperator.minus;}
-        | NOT {$uop = UnaryOperator.not;}
+        op = PLUS {uop = UnaryOperator.plus;}
+        | op = MINUS {uop = UnaryOperator.minus;}
+        | op = NOT {uop = UnaryOperator.not;}
         ) oth = other
-        {exprRet = new UnaryExpression($uop, oth.exprRet); $exprRet.setLine($oth.getLine();)}
+        {exprRet = new UnaryExpression(uop, oth.exprRet); $exprRet.setLine(op.getLine();)}
         ;
 
 other returns[Expression exprRet]:
 	LPAR expr = expression RPAR {$exprRet = expr.exprRet;}
-	| var = variable {$exprRet = $var.v;}
+	| var = variable {$exprRet = $var.varRet;}
 	| val = value {$exprRet = $val.valueRet;}
 	| q1 = queryType1 {$exprRet = $q1.query1Ret;}
 	| funcCall = functionCall {$exprRet = $funcCall.funcCallRet;}
@@ -383,7 +387,7 @@ value returns[Value valueRet]:
 
 numericValue returns[Value v]:
 	i = INT_NUMBER {$v = new IntValue($i.int);} {$v.setLine($i.getLine());}
-	| f = FLOAT_NUMBER {$v = new FloatValue($f.float);} {$v.setLine($f.getLine());}
+	| f = FLOAT_NUMBER {$v = new FloatValue(Float.parseFloat($f.text));} {$v.setLine($f.getLine());}
 	;
 
 identifier returns[Identifier identifierRet]:
@@ -391,7 +395,7 @@ identifier returns[Identifier identifierRet]:
 	;
 
 predicateIdentifier returns[Identifier predicateIdentifierRet]:
-	predIdn = PREDICATE_IDENTIFIER {$predicateIdentifierRet = new Identifier($predIdentifier.getText()); $predicateIdentifierRet.setLine($predIdentifier.getLine());}
+	predIdn = PREDICATE_IDENTIFIER {$predicateIdentifierRet = new Identifier($predIdn.getText()); $predicateIdentifierRet.setLine($predIdn.getLine());}
 	;
 
 type returns[Type typeRet]:
