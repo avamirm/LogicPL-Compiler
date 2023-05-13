@@ -18,7 +18,7 @@ public class NameAnalyzer extends Visitor<Void> {
     public ArrayList<CompileError> nameErrors = new ArrayList<>();
     //
     private static int counter = 0;
-//
+    //
     @Override
     public Void visit(Program program) {
         SymbolTable.root = new SymbolTable();
@@ -43,6 +43,7 @@ public class NameAnalyzer extends Visitor<Void> {
         var functionItem = new FunctionItem(funcDeclaration);
         var functionSymbolTable = new SymbolTable(SymbolTable.top, funcDeclaration.getName().getName());
         functionItem.setFunctionSymbolTable(functionSymbolTable);
+        SymbolTable.push(functionSymbolTable);
 
         // ToDo
         boolean isFinished = false;
@@ -94,4 +95,3 @@ public class NameAnalyzer extends Visitor<Void> {
         return null;
     }
 }
-

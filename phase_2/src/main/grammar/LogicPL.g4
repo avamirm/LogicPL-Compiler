@@ -23,7 +23,7 @@ functionDec returns[FuncDeclaration functionDeclaration]:
     FUNCTION name = identifier
     LPAR (arg1 = functionVarDec {args.add($arg1.argDeclaration);} (COMMA arg = functionVarDec {args.add($arg.argDeclaration);})*)? RPAR COLON returnType = type
     LBRACE ((stmt = statement {statements.add($stmt.statementRet);})+) RBRACE
-    {$functionDeclaration = new FuncDeclaration($name.identifierRet, $returnType.typeRet, args, statements); $functionDeclaration.setLine($name.identifierRet.getLine());}
+    {$functionDeclaration = new FuncDeclaration($name.identifierRet, $returnType.typeRet, args, statements); $functionDeclaration.setLine($FUNCTION.getLine());}
     ;
 
 functionVarDec returns [ArgDeclaration argDeclaration]:
@@ -152,6 +152,23 @@ expression returns [Expression exprRet]:
 		}
 	}
 	;
+//
+//expression2 returns [BinaryExpression binaryExprRet]:
+//    op=OR { BinaryOperator opEnum = BinaryOperator.or; }
+//    left=andExpr right=expression2
+//    {
+//        if ($right.binaryExprRet != null) {
+//            BinaryExpression binExpr = new BinaryExpression($left.exprRet, $right.binaryExprRet.getRight(), $right.binaryExprRet.getBinaryOperator());
+//            binExpr.setLine($right.binaryExprRet.getLine());
+//            $binaryExprRet = new BinaryExpression(null, binExpr, opEnum);
+//        }
+//        else {
+//            $binaryExprRet = new BinaryExpression(null, $left.exprRet, opEnum);
+//        }
+//        $binaryExprRet.setLine($op.getLine());
+//    }
+//    | { $binaryExprRet = null; } // epsilon
+//    ;
 
 expression2 returns [BinaryExpression binaryExprRet]:
 	{BinaryExpression bep;}
@@ -161,50 +178,114 @@ expression2 returns [BinaryExpression binaryExprRet]:
 		{
 			bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 			bep.setLine($r.binaryExprRet.getLine());
-			$binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.or);
+			$binaryExprRet = new BinaryExpression(null, bep, BinaryOperator.or);
 		}
 		else
 		{
 			$binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.or);
 		}
+		$binaryExprRet.setLine($OR.getLine());
 	}
-    {$binaryExprRet.setLine($OR.getLine());}
+    //{$binaryExprRet.setLine($OR.getLine());}
 	| {$binaryExprRet = null;}
 	;
 
+//andExpr returns [Expression exprRet]:
+//	l = eqExpr r = andExpr2
+//    {
+//		if ($r.binaryExprRet != null)
+//		{
+//			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+//			$exprRet.setLine($r.binaryExprRet.getLine());
+//		}
+//		else
+//		{
+//			$exprRet = $l.exprRet;
+//		}
+//	}
+//    ;
+//
+//andExpr2 returns [BinaryExpression binaryExprRet]:
+//	{BinaryExpression bep;}
+//	AND l = eqExpr r = andExpr2
+//	{
+//		if ($r.binaryExprRet != null)
+//		{
+//			bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
+//			bep.setLine($r.binaryExprRet.getLine());
+//			$binaryExprRet = new BinaryExpression(null, bep, BinaryOperator.and);
+//		}
+//		else
+//		{
+//			$binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.and);
+//		}
+//		$binaryExprRet.setLine($AND.getLine());
+//	}
+//    //{$binaryExprRet.setLine($AND.getLine());}
+//	| {$binaryExprRet = null;}
+//	;
+//expression returns [Expression exprRet]:
+//    left=andExpr right=expression2
+//    {
+//        if ($right.binaryExprRet != null) {
+//            $exprRet = new BinaryExpression($left.exprRet, $right.binaryExprRet.getRight(), $right.binaryExprRet.getBinaryOperator());
+//            $exprRet.setLine($right.binaryExprRet.getLine());
+//        }
+//        else {
+//            $exprRet = $left.exprRet;
+//        }
+//    }
+//    ;
+
+//expression2 returns [BinaryExpression binaryExprRet]:
+//    op=OR { BinaryOperator opEnum = BinaryOperator.or; }
+//    left=andExpr right=expression2
+//    {
+//        if ($right.binaryExprRet != null) {
+//            BinaryExpression binExpr = new BinaryExpression($left.exprRet, $right.binaryExprRet.getRight(), $right.binaryExprRet.getBinaryOperator());
+//            binExpr.setLine($right.binaryExprRet.getLine());
+//            $binaryExprRet = new BinaryExpression(null, binExpr, opEnum);
+//        }
+//        else {
+//            $binaryExprRet = new BinaryExpression(null, $left.exprRet, opEnum);
+//        }
+//        $binaryExprRet.setLine($op.getLine());
+//    }
+//    | { $binaryExprRet = null; } // epsilon
+//    ;
+
 andExpr returns [Expression exprRet]:
-	l = eqExpr r = andExpr2
+    left=eqExpr right=andExpr2
     {
-		if ($r.binaryExprRet != null)
-		{
-			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-			$exprRet.setLine($r.binaryExprRet.getLine());
-		}
-		else
-		{
-			$exprRet = $l.exprRet;
-		}
-	}
+        if ($right.binaryExprRet != null) {
+            $exprRet = new BinaryExpression($left.exprRet, $right.binaryExprRet.getRight(), $right.binaryExprRet.getBinaryOperator());
+            $exprRet.setLine($right.binaryExprRet.getLine());
+        }
+        else {
+            $exprRet = $left.exprRet;
+        }
+    }
     ;
 
 andExpr2 returns [BinaryExpression binaryExprRet]:
-	{BinaryExpression bep;}
-	AND l = eqExpr r = andExpr2
-	{
-		if ($r.binaryExprRet != null)
-		{
-			bep = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
-			bep.setLine($r.binaryExprRet.getLine());
-			$binaryExprRet = new BinaryExpression(null, bep, BinaryOperator.and);
-		}
-		else
-		{
-			$binaryExprRet = new BinaryExpression(null, $l.exprRet, BinaryOperator.and);
-		}
-	}
-    {$binaryExprRet.setLine($AND.getLine());}
-	| {$binaryExprRet = null;}
-	;
+    op=AND { BinaryOperator opEnum = BinaryOperator.and; }
+    left=eqExpr right=andExpr2
+    {
+        if ($right.binaryExprRet != null) {
+            BinaryExpression binExpr = new BinaryExpression($left.exprRet, $right.binaryExprRet.getRight(), $right.binaryExprRet.getBinaryOperator());
+            binExpr.setLine($right.binaryExprRet.getLine());
+            $binaryExprRet = new BinaryExpression(null, binExpr, opEnum);
+        }
+        else {
+            $binaryExprRet = new BinaryExpression(null, $left.exprRet, opEnum);
+        }
+        $binaryExprRet.setLine($op.getLine());
+    }
+    | { $binaryExprRet = null; } // epsilon
+    ;
+
+
+
 
 eqExpr returns [Expression exprRet]:
 	l = compExpr r = eqExpr2
@@ -238,8 +319,9 @@ eqExpr2 returns [BinaryExpression binaryExprRet]:
 			{
 				$binaryExprRet = new BinaryExpression(null, $l.exprRet, bop);
 			}
+			$binaryExprRet.setLine($op.getLine());
 		}
-    	{$binaryExprRet.setLine($op.getLine());}
+    	//{$binaryExprRet.setLine($op.getLine());}
 	| {$binaryExprRet = null;}
 	;
 
@@ -250,8 +332,8 @@ compExpr returns [Expression exprRet]:
 		{
 			$exprRet = new BinaryExpression($l.exprRet, $r.binaryExprRet.getRight(), $r.binaryExprRet.getBinaryOperator());
 			$exprRet.setLine($r.binaryExprRet.getLine());
-			} 
-		else 
+			}
+		else
 		{
 			$exprRet = $l.exprRet;
 		}
