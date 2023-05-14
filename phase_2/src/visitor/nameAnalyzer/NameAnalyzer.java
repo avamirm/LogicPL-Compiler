@@ -34,7 +34,7 @@ public class NameAnalyzer extends Visitor<Void> {
         for (var stmt : program.getMain().getMainStatements())
         {
             if(stmt instanceof VarDecStmt || stmt instanceof ArrayDecStmt ||
-                    stmt instanceof ForloopStmt || stmt instanceof ImplicationStmt)
+               stmt instanceof ForloopStmt || stmt instanceof ImplicationStmt)
             {
                 stmt.accept(this);
             }
@@ -60,16 +60,16 @@ public class NameAnalyzer extends Visitor<Void> {
             {
                 FunctionRedefinition errorFunctionRedefinition = new FunctionRedefinition(funcDeclaration.getLine(), funcDeclaration.getName().getName());
                 this.nameErrors.add(errorFunctionRedefinition);
-                functionItem.setName(funcDeclaration.getName().getName() + "$%:)" + counter);
+                functionItem.setName(funcDeclaration.getName().getName() + "$$$" + counter);
             }
             counter += 1;
         }
         var functionSymbolTable = new SymbolTable(SymbolTable.top, funcDeclaration.getName().getName());
         functionItem.setFunctionSymbolTable(functionSymbolTable);
         SymbolTable.push(functionSymbolTable);
-        for (ArgDeclaration varDeclaration : funcDeclaration.getArgs())
+        for (ArgDeclaration arg : funcDeclaration.getArgs())
         {
-            varDeclaration.accept(this);
+            arg.accept(this);
         }
 
         for (var stmt : funcDeclaration.getStatements())
@@ -87,23 +87,32 @@ public class NameAnalyzer extends Visitor<Void> {
 
     @Override
     public Void visit(VarDecStmt varDeclaration) {
-        var variableItem = new VariableItem(varDeclaration.getIdentifier().getName(), varDeclaration.getType());
-
+        var variableItem = new VariableItem(varDeclaration);
         // ToDo
-        try
+        boolean isFinished = false;
+        while (!isFinished)
         {
-            SymbolTable.top.put(variableItem);
-        }
-        catch (ItemAlreadyExistsException itemAlreadyExistsException)
-        {
-            VariableRedefinition errorVariableRedefinition = new VariableRedefinition(varDeclaration.getLine(), varDeclaration.getIdentifier().getName());
-            this.nameErrors.add(errorVariableRedefinition);
+            try
+            {
+                SymbolTable.top.put(variableItem);
+                isFinished = true;
+            }
+            catch (ItemAlreadyExistsException itemAlreadyExistsException)
+            {
+                VariableRedefinition errorVariableRedefinition = new VariableRedefinition(varDeclaration.getLine(), variableItem.getName());
+                this.nameErrors.add(errorVariableRedefinition);
+                variableItem.setName(variableItem.getName() + "$$$" + counter);
+            }
+            counter += 1;
         }
         return null;
     }
     @Override
     public Void visit(ForloopStmt forLoop) {
         var forIt = new VariableItem(forLoop.getIterator().getName(), forLoop.getIterator().getType());
+
+        var loopSymbolTable = new SymbolTable(SymbolTable.top, forLoop.getArrayName().getName());
+        SymbolTable.push(loopSymbolTable);
         // ToDo
         try
         {
@@ -115,8 +124,6 @@ public class NameAnalyzer extends Visitor<Void> {
             this.nameErrors.add(errorValRed);
         }
 
-        var loopSymbolTable = new SymbolTable(SymbolTable.top, forLoop.getArrayName().getName());
-        SymbolTable.push(loopSymbolTable);
         for (var stmt : forLoop.getStatements())
         {
             if(stmt instanceof VarDecStmt || stmt instanceof ArrayDecStmt ||
@@ -129,17 +136,22 @@ public class NameAnalyzer extends Visitor<Void> {
         return null;
 }
     public Void visit(ArrayDecStmt arrDecStmt) {
-        var varItem = new VariableItem(arrDecStmt.getIdentifier().getName(), arrDecStmt.getType());
-
-        // ToDo
-        try
+        var arrItem = new ArrayItem(arrDecStmt);
+        boolean isFinished = false;
+        while (!isFinished)
         {
-            SymbolTable.top.put(varItem);
-        }
-        catch (ItemAlreadyExistsException alreadyExistsException)
-        {
-            VariableRedefinition errorArrRedefinition = new VariableRedefinition(arrDecStmt.getLine(), arrDecStmt.getIdentifier().getName());
-            this.nameErrors.add(errorArrRedefinition);
+            try
+            {
+                SymbolTable.top.put(arrItem);
+                isFinished = true;
+            }
+            catch (ItemAlreadyExistsException itemAlreadyExistsException)
+            {
+                VariableRedefinition errorVariableRedefinition = new VariableRedefinition(arrDecStmt.getLine(), arrDecStmt.getIdentifier().getName());
+                this.nameErrors.add(errorVariableRedefinition);
+                arrItem.setName(arrDecStmt.getIdentifier().getName() + "$$$" + counter);
+            }
+            counter += 1;
         }
         return null;
     }
@@ -147,16 +159,21 @@ public class NameAnalyzer extends Visitor<Void> {
     @Override
     public Void visit(ArgDeclaration argDeclaration) {
         var variableItem = new VariableItem(argDeclaration.getIdentifier().getName(), argDeclaration.getType());
-
-        // ToDo
-        try
+        boolean isFinished = false;
+        while (!isFinished)
         {
-            SymbolTable.top.put(variableItem);
-        }
-        catch (ItemAlreadyExistsException itemAlreadyExistsException)
-        {
-            VariableRedefinition errorVariableRedefinition = new VariableRedefinition(argDeclaration.getLine(), argDeclaration.getIdentifier().getName());
-            this.nameErrors.add(errorVariableRedefinition);
+            try
+            {
+                SymbolTable.top.put(variableItem);
+                isFinished = true;
+            }
+            catch (ItemAlreadyExistsException itemAlreadyExistsException)
+            {
+                VariableRedefinition errorVariableRedefinition = new VariableRedefinition(argDeclaration.getLine(), argDeclaration.getIdentifier().getName());
+                this.nameErrors.add(errorVariableRedefinition);
+                variableItem.setName(argDeclaration.getIdentifier().getName() + "$$$" + counter);
+            }
+            counter += 1;
         }
         return null;
     }
