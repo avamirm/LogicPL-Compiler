@@ -12,6 +12,8 @@ public class ForLoopItem extends SymbolTableItem{
     protected SymbolTable ForLoopSymbolTable;
     protected ForloopStmt forloopStmt;
     public static final String STARTKEY = "ForLoop_";
+    private static int counter = 0;
+    private int id;
 
     public ForLoopItem(String name) {
         this.name = name;
@@ -19,6 +21,8 @@ public class ForLoopItem extends SymbolTableItem{
 
     public ForLoopItem(ForloopStmt forloopStmt)
     {
+        this.id = counter++;
+        forloopStmt.setForLoopId(id);
         this.name = forloopStmt.toString();
         this.forloopStmt = forloopStmt;
     }
@@ -30,6 +34,10 @@ public class ForLoopItem extends SymbolTableItem{
 
     @Override
     public String getKey() {
-        return FunctionItem.STARTKEY + this.name;
+        return FunctionItem.STARTKEY + this.name + id;
+    }
+
+    public void setForLoopSymbolTable(SymbolTable symbolTable) {
+        this.ForLoopSymbolTable = symbolTable;
     }
 }

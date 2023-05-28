@@ -94,7 +94,15 @@ public class NameAnalyzer extends Visitor<Void> {
 
     @Override
     public Void visit(ForloopStmt forloopStmt) {
+        var forLoopItem = new ForLoopItem(forloopStmt);
         var forLoopSymbolTable = new SymbolTable(SymbolTable.top, forloopStmt.toString());
+        forLoopItem.setForLoopSymbolTable(forLoopSymbolTable);
+
+        try{
+            SymbolTable.top.put(forLoopItem);
+        } catch (ItemAlreadyExistsException e) {
+            // unreachable
+        }
 
         SymbolTable.push(forLoopSymbolTable);
         for(Statement stmt: forloopStmt.getStatements()) {
@@ -121,7 +129,15 @@ public class NameAnalyzer extends Visitor<Void> {
 
     @Override
     public Void visit(ImplicationStmt implicationStmt) {
+        var implicationItem = new ImplicationItem(implicationStmt);
         var implicationSymbolTable = new SymbolTable(SymbolTable.top, implicationStmt.toString());
+        implicationItem.setImplicationSymbolTable(implicationSymbolTable);
+
+        try{
+            SymbolTable.top.put(implicationItem);
+        } catch (ItemAlreadyExistsException e) {
+            // unreachable
+        }
 
         SymbolTable.push(implicationSymbolTable);
         for(Statement stmt: implicationStmt.getStatements()) {
