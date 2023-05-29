@@ -36,11 +36,11 @@ public class ImplicationStmt extends Statement {
         this.condition = condition;
     }
 
-    public int getId() {
+    public int getImplicationId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setImpplicationId(int id) {
         this.id = id;
     }
 

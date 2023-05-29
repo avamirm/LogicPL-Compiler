@@ -3,9 +3,11 @@ package visitor.nameAnalyzer;
 import ast.node.Program;
 import ast.node.declaration.*;
 import ast.node.statement.*;
+import ast.type.NoType;
 import compileError.*;
 import compileError.Name.*;
 import symbolTable.SymbolTable;
+import symbolTable.itemException.ItemNotFoundException;
 import symbolTable.symbolTableItems.*;
 import symbolTable.itemException.ItemAlreadyExistsException;
 import symbolTable.symbolTableItems.VariableItem;
@@ -103,8 +105,22 @@ public class NameAnalyzer extends Visitor<Void> {
         } catch (ItemAlreadyExistsException e) {
             // unreachable
         }
-
+        VariableItem forVariableItem = null;
+        try {
+            var arrVar = (ArrayItem) SymbolTable.top.get(ArrayItem.STARTKEY + forloopStmt.getArrayName().getName());
+            forVariableItem = new VariableItem(forloopStmt.getIterator().getName(), arrVar.getType());
+        }
+        catch (ItemNotFoundException e){
+            forVariableItem = new VariableItem(forloopStmt.getIterator().getName(), new NoType());
+        }
         SymbolTable.push(forLoopSymbolTable);
+
+        try {
+            SymbolTable.top.put(forVariableItem);
+        }
+        catch (ItemAlreadyExistsException e) {
+
+        }
         for(Statement stmt: forloopStmt.getStatements()) {
             if(stmt instanceof VarDecStmt) {
                 stmt.accept(this);

@@ -12,14 +12,9 @@ public class ImplicationItem extends SymbolTableItem {
     private static int counter = 0;
     private int id;
 
-    public ImplicationItem(String name) {
-        this.name = name;
-        this.id = counter++;
-    }
-
     public ImplicationItem(ImplicationStmt implicationStmt) {
         this.id = counter++;
-        implicationStmt.setId(this.id);
+        implicationStmt.setImpplicationId(id);
         this.name = implicationStmt.toString();
         this.implicationStmt = implicationStmt;
     }

@@ -78,7 +78,7 @@ public class TypeAnalyzer extends Visitor<Void> {
     @Override
     public Void visit(ForloopStmt forloopStmt) {
         try {
-            ForLoopItem forLoopItem = (ForLoopItem) SymbolTable.top.get(ForLoopItem.STARTKEY + forloopStmt.toString() + forloopStmt.getId());
+            ForLoopItem forLoopItem = (ForLoopItem) SymbolTable.top.get(ForLoopItem.STARTKEY + forloopStmt.toString() + forloopStmt.getForloopId());
             SymbolTable.push(forLoopItem.getForLoopSymbolTable());
         } catch (ItemNotFoundException e) {
             // unreachable
@@ -127,7 +127,7 @@ public class TypeAnalyzer extends Visitor<Void> {
     @Override
     public Void visit(ImplicationStmt impStmt){
         try {
-            ImplicationItem implicationItem = (ImplicationItem) SymbolTable.top.get(ImplicationItem.STARTKEY + impStmt.toString() + impStmt.getId());
+            ImplicationItem implicationItem = (ImplicationItem) SymbolTable.top.get(ImplicationItem.STARTKEY + impStmt.toString() + impStmt.getImplicationId());
             SymbolTable.push(implicationItem.getImplicationSymbolTable());
         } catch (ItemNotFoundException e) {
             // unreachable
