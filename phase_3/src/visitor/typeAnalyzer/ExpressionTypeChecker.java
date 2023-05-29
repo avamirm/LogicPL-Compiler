@@ -1,5 +1,6 @@
 package visitor.typeAnalyzer;
 
+import ast.node.declaration.ArgDeclaration;
 import ast.node.expression.*;
 import ast.node.expression.operators.BinaryOperator;
 import ast.node.expression.operators.UnaryOperator;
@@ -40,9 +41,6 @@ public class ExpressionTypeChecker extends Visitor<Type> {
             return true;
         if (el1 instanceof NoType && el2 instanceof NoType)
             return true;
-
-        //TODO check the two type are same or not
-
         return false;
     }
 
@@ -74,23 +72,6 @@ public class ExpressionTypeChecker extends Visitor<Type> {
                 return new NoType();
             }
         }
-        if(operator.equals(UnaryOperator.minus) || operator.equals(UnaryOperator.plus)) {
-            if (expType instanceof IntType) {
-                return new IntType();
-            }
-            if (expType instanceof FloatType) {
-                return new FloatType();
-            }
-            else if (expType instanceof NoType) {
-                return new NoType();
-            }
-            else {
-                typeErrors.add(new UnsupportedOperandType(unaryExpression.getLine(), operator.name()));
-                return new NoType();
-            }
-        }
-
-
         else {
             if (expType instanceof IntType) {
                 return new IntType();
@@ -124,18 +105,11 @@ public class ExpressionTypeChecker extends Visitor<Type> {
                 return new NoType();
         }
         else if (operator.equals(BinaryOperator.eq) || operator.equals(BinaryOperator.neq)){
-
-            if (!sameType(tl,tr)){
-                UnsupportedOperandType exception = new UnsupportedOperandType(right.getLine(), operator.name());
-                typeErrors.add(exception);
-                return new NoType();
-            }
-            else {
-                if (tl instanceof NoType || tr instanceof NoType)
+            if (tl instanceof NoType || tr instanceof NoType)
                     return new NoType();
-                else
-                    return new BooleanType();
-            }
+            else if (sameType(tl, tr))
+                return new BooleanType();
+
         }
         else if (operator.equals(BinaryOperator.gt) || operator.equals(BinaryOperator.lt) ||
                 operator.equals(BinaryOperator.gte) || operator.equals(BinaryOperator.lte)){
@@ -143,11 +117,6 @@ public class ExpressionTypeChecker extends Visitor<Type> {
                 return new NoType();
             if (sameType(tl,tr))
                 return new BooleanType();
-            else {
-                UnsupportedOperandType exception = new UnsupportedOperandType(right.getLine(), operator.name());
-                typeErrors.add(exception);
-                return new NoType();
-            }
         }
 
         else if ((operator.equals(BinaryOperator.add)) ||
@@ -156,6 +125,8 @@ public class ExpressionTypeChecker extends Visitor<Type> {
                 (operator.equals(BinaryOperator.div)) ||
                 (operator.equals(BinaryOperator.mod)))
         {
+            if (tl instanceof NoType && tr instanceof NoType)
+                return new NoType();
             if (tl instanceof IntType && tr instanceof IntType)
                 return new IntType();
             if (tl instanceof FloatType && tr instanceof FloatType)
@@ -166,7 +137,7 @@ public class ExpressionTypeChecker extends Visitor<Type> {
         }
 
 
-        UnsupportedOperandType exception = new UnsupportedOperandType(left.getLine(), operator.name());
+        UnsupportedOperandType exception = new UnsupportedOperandType(binaryExpression.getLine(), operator.name());
         typeErrors.add(exception);
         return new NoType();
     }
@@ -189,29 +160,42 @@ public class ExpressionTypeChecker extends Visitor<Type> {
         }
     }
 
+
     @Override
     public Type visit(FunctionCall functionCall) {
         try {
-            FunctionItem funcItem = (FunctionItem) (SymbolTable.top.get(FunctionItem.STARTKEY + functionCall.getUFuncName()));
-            return funcItem.getHandlerDeclaration().getType();
-        } catch (ItemNotFoundException e) {
-            typeErrors.add(new FunctionNotDeclared(functionCall.getLine(), functionCall.getUFuncName().getName()));
-            ArrayList<Type> arrl = new ArrayList<>();
-            for (var item : functionCall.getArgs()) {
-                arrl.add(item.getType());
-            }
-            FunctionItem vi = new FunctionItem(functionCall.getUFuncName().getName(), arrl);
-            try {
-                SymbolTable.top.put(vi);
-            }
-            catch (ItemAlreadyExistsException ee) {
-                // fuck off
+            FunctionItem func = (FunctionItem) SymbolTable.top.get(FunctionItem.STARTKEY + functionCall.getUFuncName().getName());
+            ArrayList<Expression> args = functionCall.getArgs();
+            if (func.getHandlerDeclaration() != null) {
+                ArrayList<ArgDeclaration> typeOfArgs = func.getHandlerDeclaration().getArgs();
+                //    if (args.size() != typeOfArgs.size()) {
+//                typeErrors.add(new FunctionNotDeclared(functionCall.getLine(), functionCall.getFuncName().getName()));
+                //      }
+//            for (int i = 0; i < args.size(); i++) {
+//                Type argType = args.get(i).accept(this);
+//                Type argType2 = typeOfArgs.get(i).getType();
+//                if (!sameType(argType, argType2)) {
+//                    typeErrors.add(new FunctionNotDeclared(functionCall.getLine(), functionCall.getFuncName().getName()));
+//                }
+//            }
+                return func.getHandlerDeclaration().getType();
             }
             return new NoType();
-            ///////////////////////arlllll
         }
+        catch (ItemNotFoundException e) {
+            typeErrors.add(new FunctionNotDeclared(functionCall.getLine(), functionCall.getUFuncName().getName()));
+            ArrayList<Type> arrList = new ArrayList<>();
+            for (var arg : functionCall.getArgs()) {
+                arrList.add(arg.getType());
+            }
+            try {
+                SymbolTable.top.put(new FunctionItem(functionCall.getUFuncName().getName(), arrList));
+            }
+            catch (ItemAlreadyExistsException e1) {
 
-
+            }
+            return new NoType();
+        }
     }
 
     @Override
