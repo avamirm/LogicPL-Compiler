@@ -15,14 +15,10 @@ public class ForLoopItem extends SymbolTableItem{
     private static int counter = 0;
     private int id;
 
-    public ForLoopItem(String name) {
-        this.name = name;
-    }
-
     public ForLoopItem(ForloopStmt forloopStmt)
     {
         this.id = counter++;
-        forloopStmt.setForLoopId(id);
+        forloopStmt.setId(id);
         this.name = forloopStmt.toString();
         this.forloopStmt = forloopStmt;
     }
@@ -32,12 +28,12 @@ public class ForLoopItem extends SymbolTableItem{
         return this.ForLoopSymbolTable;
     }
 
+    public void setForLoopSymbolTable(SymbolTable symbolTable) {
+        this.ForLoopSymbolTable = symbolTable;
+    }
+
     @Override
     public String getKey() {
         return FunctionItem.STARTKEY + this.name + id;
-    }
-
-    public void setForLoopSymbolTable(SymbolTable symbolTable) {
-        this.ForLoopSymbolTable = symbolTable;
     }
 }

@@ -14,7 +14,7 @@ public class SymbolTable {
     public static void push(SymbolTable symbolTable) {
         if(top != null)
             stack.push(top);
-        top = symbolTable;
+        SymbolTable.top = symbolTable;
     }
 
     public static void pop() {

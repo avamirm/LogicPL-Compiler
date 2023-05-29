@@ -177,9 +177,9 @@ public class NameAnalyzer extends Visitor<Void> {
 
     @Override
     public Void visit(ArrayDecStmt arrayDecStmt) {
-        var variableItem = new VariableItem(arrayDecStmt.getIdentifier().getName(), arrayDecStmt.getType());
+        var arrayItem = new ArrayItem(arrayDecStmt.getIdentifier().getName(), arrayDecStmt.getType());
         try {
-            SymbolTable.top.put(variableItem);
+            SymbolTable.top.put(arrayItem);
         } catch (ItemAlreadyExistsException e) {
             var error = new VariableRedefinition(arrayDecStmt.getLine(), arrayDecStmt.getIdentifier().getName());
             nameErrors.add(error);

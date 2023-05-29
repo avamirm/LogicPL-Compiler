@@ -40,11 +40,11 @@ public class ForloopStmt extends Statement {
         return arrayName;
     }
 
-    public int getForLoopId() {
+    public int getId() {
         return id;
     }
 
-    public void setForLoopId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
     public void setArrayName(Identifier identifier) {

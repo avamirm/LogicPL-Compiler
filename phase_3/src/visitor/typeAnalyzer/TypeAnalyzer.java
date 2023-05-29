@@ -73,14 +73,12 @@ public class TypeAnalyzer extends Visitor<Void> {
             stmt.accept(this);
         }
 
-        SymbolTable.pop();
-
         return null;
     }
     @Override
     public Void visit(ForloopStmt forloopStmt) {
         try {
-            ForLoopItem forLoopItem = (ForLoopItem) SymbolTable.root.get(ForLoopItem.STARTKEY + forloopStmt.toString() + forloopStmt.getForLoopId());
+            ForLoopItem forLoopItem = (ForLoopItem) SymbolTable.top.get(ForLoopItem.STARTKEY + forloopStmt.toString() + forloopStmt.getId());
             SymbolTable.push(forLoopItem.getForLoopSymbolTable());
         } catch (ItemNotFoundException e) {
             // unreachable
@@ -114,7 +112,7 @@ public class TypeAnalyzer extends Visitor<Void> {
                 SymbolTable.root.get(FunctionItem.STARTKEY + functionCall.getUFuncName().getName());
         }
         catch (ItemNotFoundException e) {
-
+//            typeErrors.add(new FunctionNotDeclared(functionCall.getLine(), functionCall.getUFuncName().getName()));
         }
         functionCall.accept(expressionTypeChecker);
         return null;
@@ -129,14 +127,14 @@ public class TypeAnalyzer extends Visitor<Void> {
     @Override
     public Void visit(ImplicationStmt impStmt){
         try {
-            ImplicationItem implicationItem = (ImplicationItem) SymbolTable.root.get(ImplicationItem.STARTKEY + impStmt.toString() + impStmt.getImplicationId());
+            ImplicationItem implicationItem = (ImplicationItem) SymbolTable.top.get(ImplicationItem.STARTKEY + impStmt.toString() + impStmt.getId());
             SymbolTable.push(implicationItem.getImplicationSymbolTable());
         } catch (ItemNotFoundException e) {
             // unreachable
         }
 
-        Type tl = impStmt.getCondition().accept(expressionTypeChecker);
-        if (!(tl instanceof BooleanType)) {
+        Type conditionType = impStmt.getCondition().accept(expressionTypeChecker);
+        if (!(conditionType instanceof BooleanType)) {
             typeErrors.add(new ConditionTypeNotBool(impStmt.getLine()));
         }
 
@@ -150,9 +148,17 @@ public class TypeAnalyzer extends Visitor<Void> {
 
     @Override
     public Void visit(ReturnStmt returnStmt) {
-        returnStmt.getExpression().accept(expressionTypeChecker);
+        var retExp = returnStmt.getExpression();
+        if (retExp != null) {
+            retExp.accept(expressionTypeChecker);
+        }
         return null;
     }
+//        if (returnStmt.getExpression() != null) {
+//            returnStmt.getExpression().accept(expressionTypeChecker);
+//        }
+//        return null;
+//    }
 
     @Override
     public Void visit(ArrayDecStmt arrayDecStmt) {

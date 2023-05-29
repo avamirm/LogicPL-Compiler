@@ -18,6 +18,7 @@ import compileError.Type.VarNotDeclared;
 import symbolTable.SymbolTable;
 import symbolTable.itemException.ItemAlreadyExistsException;
 import symbolTable.itemException.ItemNotFoundException;
+import symbolTable.symbolTableItems.ArrayItem;
 import symbolTable.symbolTableItems.FunctionItem;
 import symbolTable.symbolTableItems.VariableItem;
 import visitor.Visitor;
@@ -195,7 +196,19 @@ public class ExpressionTypeChecker extends Visitor<Type> {
             return funcItem.getHandlerDeclaration().getType();
         } catch (ItemNotFoundException e) {
             typeErrors.add(new FunctionNotDeclared(functionCall.getLine(), functionCall.getUFuncName().getName()));
+            ArrayList<Type> arrl = new ArrayList<>();
+            for (var item : functionCall.getArgs()) {
+                arrl.add(item.getType());
+            }
+            FunctionItem vi = new FunctionItem(functionCall.getUFuncName().getName(), arrl);
+            try {
+                SymbolTable.top.put(vi);
+            }
+            catch (ItemAlreadyExistsException ee) {
+                // fuck off
+            }
             return new NoType();
+            ///////////////////////arlllll
         }
 
 
@@ -216,9 +229,9 @@ public class ExpressionTypeChecker extends Visitor<Type> {
     @Override
     public Type visit(ArrayAccess arrayAccess){
         try {
-            VariableItem varItem = (VariableItem) (SymbolTable.top.get(VariableItem.STARTKEY + arrayAccess.getName()));
+            ArrayItem arrItem = (ArrayItem) (SymbolTable.top.get(ArrayItem.STARTKEY + arrayAccess.getName()));
             if (arrayAccess.getIndex().accept(this) instanceof IntType) {
-                return varItem.getType();
+                return arrItem.getType();
             }
             else {
                // typeErrors.add(new UnsupportedOperandType(arrayAccess.getLine(), "[]"));
@@ -227,6 +240,14 @@ public class ExpressionTypeChecker extends Visitor<Type> {
         }
         catch (ItemNotFoundException e){
             typeErrors.add(new VarNotDeclared(arrayAccess.getLine(), arrayAccess.getName()));
+//            return new NoType();
+            VariableItem varItem = new VariableItem(arrayAccess.getName(), new NoType());
+            try {
+                SymbolTable.top.put(varItem);
+            }
+            catch (ItemAlreadyExistsException e2) {
+
+            }
             return new NoType();
         }
     }

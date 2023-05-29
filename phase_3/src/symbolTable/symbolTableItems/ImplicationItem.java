@@ -10,11 +10,16 @@ public class ImplicationItem extends SymbolTableItem {
 
     public static final String STARTKEY = "Implication_";
     private static int counter = 0;
-
     private int id;
+
+    public ImplicationItem(String name) {
+        this.name = name;
+        this.id = counter++;
+    }
+
     public ImplicationItem(ImplicationStmt implicationStmt) {
         this.id = counter++;
-        implicationStmt.setImplicationId(id);
+        implicationStmt.setId(this.id);
         this.name = implicationStmt.toString();
         this.implicationStmt = implicationStmt;
     }
