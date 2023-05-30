@@ -107,7 +107,7 @@ public class NameAnalyzer extends Visitor<Void> {
         }
         VariableItem forVariableItem = null;
         try {
-            var arrVar = (ArrayItem) SymbolTable.top.get(ArrayItem.STARTKEY + forloopStmt.getArrayName().getName());
+            var arrVar = (VariableItem) SymbolTable.top.get(VariableItem.STARTKEY + forloopStmt.getArrayName().getName());
             forVariableItem = new VariableItem(forloopStmt.getIterator().getName(), arrVar.getType());
         }
         catch (ItemNotFoundException e){
@@ -193,7 +193,8 @@ public class NameAnalyzer extends Visitor<Void> {
 
     @Override
     public Void visit(ArrayDecStmt arrayDecStmt) {
-        var arrayItem = new ArrayItem(arrayDecStmt.getIdentifier().getName(), arrayDecStmt.getType());
+        var arrayItem = new VariableItem(arrayDecStmt.getIdentifier().getName(), arrayDecStmt.getType());
+        // var variableItem = new VariableItem(arrayDecStmt.getIdentifier().getName(), arrayDecStmt.getType());
         try {
             SymbolTable.top.put(arrayItem);
         } catch (ItemAlreadyExistsException e) {

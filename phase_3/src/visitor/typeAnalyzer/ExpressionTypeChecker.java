@@ -213,9 +213,9 @@ public class ExpressionTypeChecker extends Visitor<Type> {
     @Override
     public Type visit(ArrayAccess arrayAccess){
         try {
-            ArrayItem arrItem = (ArrayItem) (SymbolTable.top.get(ArrayItem.STARTKEY + arrayAccess.getName()));
+            VariableItem varItem = (VariableItem) (SymbolTable.top.get(VariableItem.STARTKEY + arrayAccess.getName()));
             if (arrayAccess.getIndex().accept(this) instanceof IntType) {
-                return arrItem.getType();
+                return varItem.getType();
             }
             else {
                // typeErrors.add(new UnsupportedOperandType(arrayAccess.getLine(), "[]"));

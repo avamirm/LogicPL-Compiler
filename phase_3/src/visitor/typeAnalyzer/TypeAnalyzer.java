@@ -83,7 +83,7 @@ public class TypeAnalyzer extends Visitor<Void> {
         } catch (ItemNotFoundException e) {
             // unreachable
         }
-
+        forloopStmt.getArrayName().accept(expressionTypeChecker);////////////////////////////////////////////////
         for (var stmt : forloopStmt.getStatements()) {
             stmt.accept(this);
         }
@@ -98,7 +98,7 @@ public class TypeAnalyzer extends Visitor<Void> {
         Type tr = assignStmt.getRValue().accept(expressionTypeChecker);
         
         if (!expressionTypeChecker.sameType(tl, tr) && !(tl instanceof NoType) && !(tr instanceof NoType)) {
-            typeErrors.add(new UnsupportedOperandType(assignStmt.getLine(), assignStmt.getLValue().toString()));
+            typeErrors.add(new UnsupportedOperandType(assignStmt.getLine(), BinaryOperator.assign.name()));
         }
         if (!expressionTypeChecker.isLvalue(assignStmt.getLValue())) {
             typeErrors.add(new LeftSideNotLValue(assignStmt.getLine()));
@@ -134,7 +134,7 @@ public class TypeAnalyzer extends Visitor<Void> {
         }
 
         Type conditionType = impStmt.getCondition().accept(expressionTypeChecker);
-        if (!(conditionType instanceof BooleanType)) {
+        if (!(conditionType instanceof BooleanType) && !(conditionType instanceof NoType)) {
             typeErrors.add(new ConditionTypeNotBool(impStmt.getLine()));
         }
 
@@ -154,11 +154,6 @@ public class TypeAnalyzer extends Visitor<Void> {
         }
         return null;
     }
-//        if (returnStmt.getExpression() != null) {
-//            returnStmt.getExpression().accept(expressionTypeChecker);
-//        }
-//        return null;
-//    }
 
     @Override
     public Void visit(ArrayDecStmt arrayDecStmt) {
