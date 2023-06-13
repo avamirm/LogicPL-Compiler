@@ -1,4 +1,4 @@
-// Generated from /home/yektanet/Edu/TA/PLC/CA3V2/src/main/grammar/LogicPL.g4 by ANTLR 4.12.0
+// Generated from D:/Compiler/CA/LogicPL-Compiler/phase_4/src/main/grammar\LogicPL.g4 by ANTLR 4.12.0
 package main.grammar;
 
 import ast.node.*;
