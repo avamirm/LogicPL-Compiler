@@ -34,37 +34,19 @@ public class CodeGenerator extends Visitor<String> {
     private ArrayList<String> slots = new ArrayList<>();
     private StringBuilder str = new StringBuilder();
 
-    // private void addCommand(String command) {
-    // try {
-    // command = String.join("\n\t\t", command.split("\n"));
-    // if(command.startsWith("Label_"))
-    // mainFile.write("\t" + command + "\n");
-    // else if(command.startsWith("."))
-    // mainFile.write(command + "\n");
-    // else
-    // mainFile.write("\t\t" + command + "\n");
-    // mainFile.flush();
-    // } catch (IOException e) {//unreachable
-
-    // }
-    // }
-
     private String getVarType(Type type) {
         if (type instanceof IntType) {
             return "I";
         }
-        return "N";
+        return "V";
     }
 
     private int slotOf(String identifier) {
-        if (identifier.equals("")) {
-            return slots.size() + 1;
-        }
         for (int i = 0; i < slots.size(); i++)
             if (slots.get(i).equals(identifier))
-                return i + 1;
+                return i;
         slots.add(identifier);
-        return slots.size();
+        return slots.size() - 1;
     }
 
     public void addStaticMainMethod() {
@@ -73,7 +55,7 @@ public class CodeGenerator extends Visitor<String> {
         command += ".super java/lang/Object\n";
         command += ".method public <init>()V\n";
         command += "aload_0\n";
-        command += ".method public static main([Ljava/lang/String;)V\n";
+        command += "invokenonvirtual java/lang/Object/<init>()V\n";
         command += "return\n";
         command += ".end method\n";
         str.append(command).append('\n');
@@ -100,6 +82,7 @@ public class CodeGenerator extends Visitor<String> {
 
         slotOf("args");
 
+
         for (var stmt : mainDeclaration.getMainStatements()) {
             if (stmt instanceof VarDecStmt || stmt instanceof AssignStmt || stmt instanceof ReturnStmt)
                 command += stmt.accept(this);
@@ -113,7 +96,7 @@ public class CodeGenerator extends Visitor<String> {
     @Override
     public String visit(FuncDeclaration funcDeclaration) {
         String funcName = funcDeclaration.getName().getName();
-        String command = ".method public static" + funcName + "(";
+        String command = ".method public static" + " " + funcName + "(";
         StringBuilder args = new StringBuilder();
 
         for (var arg : funcDeclaration.getArgs()) {
@@ -132,11 +115,16 @@ public class CodeGenerator extends Visitor<String> {
                 command += stmt.accept(this);
         }
 
-        command += "return\n";
+        command += "ireturn\n";
         command += ".end method\n";
         return command;
     }
-
+    @Override
+    public String visit(ReturnStmt returnStmt) {
+        Expression returnValue = returnStmt.getExpression();
+        String command = returnValue.accept(this);
+        return command;
+    }
     @Override
     public String visit(VarDecStmt varDecStmt) {
         Expression initExpr = varDecStmt.getInitialExpression();
@@ -156,17 +144,21 @@ public class CodeGenerator extends Visitor<String> {
     @Override
     public String visit(AssignStmt assignStmt) {
         Expression rhs = assignStmt.getRValue();
-        int slot = slotOf(((Identifier) assignStmt.getLValue()).getName());
+        int slot = slotOf(((Variable) assignStmt.getLValue()).getName());
         String command = rhs.accept(this);
         command += "istore " + slot + "\n";
         return command;
     }
-
     @Override
-    public String visit(ReturnStmt returnStmt) {
-        Expression returnValue = returnStmt.getExpression();
-        String command = returnValue.accept(this);
-        return command;
+    public String visit(UnaryExpression unaryExpression) {
+        Expression expr = unaryExpression.getOperand();
+        String command = "";
+        UnaryOperator op = unaryExpression.getUnaryOperator();
+        if (op == UnaryOperator.minus)
+            command += "ineg\n";
+        else if (op == UnaryOperator.not)
+            command += "iconst_1\nixor\n";
+        return expr.accept(this) + command;
     }
 
     @Override
@@ -189,18 +181,6 @@ public class CodeGenerator extends Visitor<String> {
     }
 
     @Override
-    public String visit(UnaryExpression unaryExpression) {
-        Expression expr = unaryExpression.getOperand();
-        String command = "";
-        UnaryOperator op = unaryExpression.getUnaryOperator();
-        if (op == UnaryOperator.minus)
-            command += "ineg\n";
-        else if (op == UnaryOperator.not)
-            command += "iconst_1\nixor\n";
-        return expr.accept(this) + command;
-    }
-
-    @Override
     public String visit(Identifier identifier) {
         return "iload " + slotOf(identifier.getName()) + '\n';
     }
@@ -210,3 +190,5 @@ public class CodeGenerator extends Visitor<String> {
         return "ldc " + intValue.getConstant() + '\n';
     }
 }
+
+

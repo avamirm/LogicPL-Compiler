@@ -6,4 +6,7 @@ function calculate(): int {
     return result;
 }
 
-main{}
+main
+{
+
+}
